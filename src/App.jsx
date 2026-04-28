@@ -48,17 +48,17 @@ const DEFAULT_EQUIPMENT_LIST = [
 ];
 
 const PROJECT_COLORS = {
-  "US-89 Bridge Replacement":     { bg: "#1a2e20", border: "#4a8a5a", dot: "#4a8a5a", text: "#7abf8a" },
-  "Downtown Utility Relocation":  { bg: "#1a2535", border: "#4a6a9a", dot: "#4a6a9a", text: "#7a9aca" },
-  "SR-101 Widening Phase 2":      { bg: "#2a1e18", border: "#9a5a38", dot: "#c07848", text: "#d4956a" },
-  "Mesa Stormwater Basin":        { bg: "#1e1a2e", border: "#6a4a9a", dot: "#8a6aba", text: "#aa90d0" },
-  "Riverside Culvert Extension":  { bg: "#1a2830", border: "#3a7a8a", dot: "#4a9aaa", text: "#7ac0d0" },
+  "US-89 Bridge Replacement":     { bg: "#0d2440", border: "#1e5a9a", dot: "#2979cc", text: "#64b5f6" },
+  "Downtown Utility Relocation":  { bg: "#0a2a1a", border: "#1a6a40", dot: "#2e9e60", text: "#66bb88" },
+  "SR-101 Widening Phase 2":      { bg: "#2a1500", border: "#8a4a00", dot: "#f57c00", text: "#ffaa44" },
+  "Mesa Stormwater Basin":        { bg: "#1a1040", border: "#4a3a9a", dot: "#7c5cbf", text: "#b39ddb" },
+  "Riverside Culvert Extension":  { bg: "#002030", border: "#0a6080", dot: "#0097a7", text: "#4dd0e1" },
 };
 
 const ROLE_COLORS = {
-  "Foreman": "#e07b39", "Superintendent": "#e07b39",
-  "Equipment Operator": "#4a90a4", "Surveyor": "#6a9a6a",
-  "Pipe Layer": "#7b8ea0", "Laborer": "#5a6a7a", "Traffic Control": "#c0a030",
+  "Foreman": "#f57c00", "Superintendent": "#f57c00",
+  "Equipment Operator": "#1976d2", "Surveyor": "#2e9e60",
+  "Pipe Layer": "#0097a7", "Laborer": "#5a7a9a", "Traffic Control": "#f57c00",
 };
 
 const INITIAL_SCHEDULES = [
@@ -95,7 +95,7 @@ function getWeekDates(anchor) {
 // ═══════════════════════════════════════════════════════════════
 function PrimedLogo() {
   return (
-    <div style={{ background:"#e07b39", borderRadius:8, padding:"4px 11px", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, color:"#fff", letterSpacing:"0.08em", flexShrink:0 }}>
+    <div style={{ background:"var(--orange)", borderRadius:8, padding:"4px 11px", fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:18, color:"#fff", letterSpacing:"0.08em", flexShrink:0 }}>
       PRIMED
     </div>
   );
@@ -112,45 +112,59 @@ function HamburgerMenu({ onNavigate, currentScreen }) {
   return (
     <div style={{ position:"relative", zIndex:200 }}>
       <button onClick={() => setOpen(o=>!o)} style={{
-        background: open ? "#1a2f3f" : "#0d1820",
-        border:`1px solid ${open ? "#e07b39" : "#2a3a48"}`,
-        borderRadius:8, padding:"9px 11px", cursor:"pointer",
-        display:"flex", flexDirection:"column", gap:4, alignItems:"center", justifyContent:"center",
+        background:"transparent", border:"none", cursor:"pointer",
+        display:"flex", flexDirection:"column", gap:5, alignItems:"center", justifyContent:"center",
+        padding:"4px 6px",
       }}>
-        {open
-          ? <span style={{ color:"#e07b39", fontSize:16, lineHeight:1 }}>✕</span>
-          : [0,1,2].map(i => (
-              <span key={i} style={{ display:"block", width:18, height:2, background:"#8aa0b0", borderRadius:2 }} />
-            ))
-        }
+        {[0,1,2].map(i => (
+          <span key={i} style={{ display:"block", width:22, height:2, background:"#fff", borderRadius:2, transition:"all 0.2s",
+            transform: open ? (i===0?"rotate(45deg) translate(5px,5px)":i===2?"rotate(-45deg) translate(5px,-5px)":"scaleX(0)") : "none",
+            opacity: open && i===1 ? 0 : 1,
+          }} />
+        ))}
       </button>
+
       {open && (
         <>
-          <div onClick={() => setOpen(false)} style={{ position:"fixed", inset:0, zIndex:199 }} />
+          <div onClick={() => setOpen(false)} style={{ position:"fixed", inset:0, zIndex:199, background:"rgba(0,0,0,0.5)" }} />
+          {/* Side drawer */}
           <div style={{
-            position:"absolute", top:"calc(100% + 8px)", left:0,
-            background:"#0d1820", border:"1px solid #2a3a48",
-            borderRadius:10, padding:6, minWidth:190,
-            boxShadow:"0 8px 32px rgba(0,0,0,0.5)",
-            zIndex:201, animation:"fadeUp 0.15s ease",
+            position:"fixed", top:0, left:0, bottom:0, width:260,
+            background:"#0d47a1", zIndex:201,
+            display:"flex", flexDirection:"column",
+            animation:"slideInLeft 0.2s ease",
+            boxShadow:"4px 0 20px rgba(0,0,0,0.5)",
           }}>
-            {items.map((item, i) => (
-              <div key={item.key}>
-                {i > 0 && <div style={{ height:1, background:"#1a2830", margin:"3px 0" }} />}
-                <button onClick={() => { onNavigate(item.key); setOpen(false); }} style={{
-                  width:"100%", display:"flex", alignItems:"center", gap:10,
-                  background: currentScreen===item.key ? "#1a2f3f" : "transparent",
-                  border:"none", borderRadius:7, padding:"10px 12px", cursor:"pointer",
-                  textAlign:"left", fontFamily:"inherit",
+            {/* Drawer header */}
+            <div style={{ padding:"16px 20px 12px", borderBottom:"1px solid rgba(255,255,255,0.15)", background:"#0a3d91" }}>
+              <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:22, color:"#fff", letterSpacing:"0.04em" }}>PRIMED</div>
+              <div style={{ fontSize:10, color:"rgba(255,255,255,0.55)", letterSpacing:"0.1em", marginTop:2 }}>HEAVY CIVIL SCHEDULER</div>
+            </div>
+            {/* Nav items */}
+            <div style={{ flex:1, padding:"8px 0" }}>
+              {items.map((item, i) => (
+                <button key={item.key} onClick={() => { onNavigate(item.key); setOpen(false); }} style={{
+                  width:"100%", display:"flex", alignItems:"center", gap:14,
+                  background: currentScreen===item.key ? "rgba(255,255,255,0.15)" : "transparent",
+                  borderLeft: currentScreen===item.key ? "3px solid #ff9800" : "3px solid transparent",
+                  border:"none", borderRight:"none", borderTop:"none", borderBottom:"none",
+                  borderLeft: currentScreen===item.key ? "3px solid #ff9800" : "3px solid transparent",
+                  padding:"14px 20px", cursor:"pointer", textAlign:"left", fontFamily:"'Roboto',sans-serif",
+                  transition:"background 0.15s",
                 }}>
-                  <span style={{ fontSize:15 }}>{item.icon}</span>
-                  <span style={{ fontSize:13, fontWeight:600, color: currentScreen===item.key ? "#e07b39" : "#c0d0dc", letterSpacing:"0.02em" }}>
+                  <span style={{ fontSize:18 }}>{item.icon}</span>
+                  <span style={{ fontSize:15, fontWeight: currentScreen===item.key ? 600 : 400, color:"#fff", letterSpacing:"0.01em" }}>
                     {item.label}
                   </span>
-                  {currentScreen===item.key && <span style={{ marginLeft:"auto", color:"#e07b39", fontSize:10 }}>●</span>}
                 </button>
+              ))}
+            </div>
+            {/* Footer */}
+            <div style={{ padding:"16px 20px", borderTop:"1px solid rgba(255,255,255,0.15)" }}>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", lineHeight:1.7 }}>
+                Version 1.0.0<br />© 2026, Primed. All rights reserved.
               </div>
-            ))}
+            </div>
           </div>
         </>
       )}
@@ -169,41 +183,41 @@ function NotificationStep({ crewNames, changeLines, onConfirm, onBack }) {
   if (sent) return (
     <div style={{ textAlign:"center", padding:"32px 0 16px" }}>
       <div style={{ fontSize:36, marginBottom:12 }}>✉️</div>
-      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#6ab07a", marginBottom:6 }}>Notifications Sent</div>
-      <div style={{ fontSize:12, color:"#5a7080" }}>{crewNames.length} crew member{crewNames.length!==1?"s":""} notified via {method==="both"?"email & SMS":method}</div>
+      <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#4caf50", marginBottom:6 }}>Notifications Sent</div>
+      <div style={{ fontSize:12, color:"var(--text3)" }}>{crewNames.length} crew member{crewNames.length!==1?"s":""} notified via {method==="both"?"email & SMS":method}</div>
     </div>
   );
   return (
     <div>
       {changeLines && changeLines.length > 0 && (
-        <div style={{ background:"#0a1828", border:"1px solid #2a3a4a", borderRadius:10, padding:"14px 16px", marginBottom:16 }}>
-          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:10 }}>Schedule Change Summary</div>
-          {changeLines.map((l,i) => <div key={i} style={{ fontSize:12, fontFamily:"'IBM Plex Mono',monospace", lineHeight:1.7, color:"#8aa0b0" }}>{l}</div>)}
+        <div style={{ background:"var(--bg2)", border:"1px solid #2a3a4a", borderRadius:10, padding:"14px 16px", marginBottom:16 }}>
+          <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:10 }}>Schedule Change Summary</div>
+          {changeLines.map((l,i) => <div key={i} style={{ fontSize:12, fontFamily:"'Roboto Mono',monospace", lineHeight:1.7, color:"var(--text2)" }}>{l}</div>)}
         </div>
       )}
       <div style={{ marginBottom:16 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:10 }}>Notify Crew — {crewNames.length}</div>
+        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:10 }}>Notify Crew — {crewNames.length}</div>
         <div style={{ display:"flex", flexDirection:"column", gap:5, maxHeight:150, overflowY:"auto" }}>
           {crewNames.map((n,i) => (
-            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, background:"#111820", border:"1px solid #1e2830", borderRadius:7, padding:"7px 10px" }}>
-              <div style={{ width:26, height:26, borderRadius:"50%", background:"#1e2830", border:"1px solid #2a3a48", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#8aa0b0", fontWeight:700, flexShrink:0 }}>{n.split(" ").map(x=>x[0]).join("")}</div>
-              <span style={{ fontSize:12, color:"#c0d0dc", fontWeight:600 }}>{n}</span>
-              <span style={{ marginLeft:"auto", fontSize:10, color:"#3a5060" }}>{method==="email"?"✉":method==="sms"?"📱":"✉+📱"}</span>
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, background:"var(--bg3)", border:"1px solid #1e2830", borderRadius:7, padding:"7px 10px" }}>
+              <div style={{ width:26, height:26, borderRadius:"50%", background:"var(--border)", border:"1px solid #2a3a48", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"var(--text2)", fontWeight:700, flexShrink:0 }}>{n.split(" ").map(x=>x[0]).join("")}</div>
+              <span style={{ fontSize:12, color:"var(--text)", fontWeight:600 }}>{n}</span>
+              <span style={{ marginLeft:"auto", fontSize:10, color:"var(--text3)" }}>{method==="email"?"✉":method==="sms"?"📱":"✉+📱"}</span>
             </div>
           ))}
         </div>
       </div>
       <div style={{ marginBottom:16 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:8 }}>Notification Method</div>
+        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:8 }}>Notification Method</div>
         <div style={{ display:"flex", gap:6 }}>
           {[{v:"email",l:"✉ Email"},{v:"sms",l:"📱 SMS"},{v:"both",l:"✉+📱 Both"}].map(o => (
-            <button key={o.v} onClick={()=>setMethod(o.v)} style={{ flex:1, padding:"8px 4px", borderRadius:7, cursor:"pointer", background:method===o.v?"#1a2f3f":"#0a1520", border:`1px solid ${method===o.v?"#e07b39":"#1e2830"}`, color:method===o.v?"#e07b39":"#5a7080", fontSize:11, fontFamily:"inherit", fontWeight:method===o.v?700:400 }}>{o.l}</button>
+            <button key={o.v} onClick={()=>setMethod(o.v)} style={{ flex:1, padding:"8px 4px", borderRadius:7, cursor:"pointer", background:method===o.v?"rgba(25,118,210,0.2)":"var(--bg2)", border:`1px solid ${method===o.v?"var(--orange)":"var(--border)"}`, color:method===o.v?"var(--orange)":"var(--text3)", fontSize:11, fontFamily:"inherit", fontWeight:method===o.v?700:400 }}>{o.l}</button>
           ))}
         </div>
       </div>
       <div style={{ display:"flex", gap:8 }}>
-        <button onClick={onBack} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:7, color:"#8aa0b0", fontSize:12, padding:"10px 14px", cursor:"pointer", fontFamily:"inherit" }}>← Back</button>
-        <button onClick={handleSend} disabled={sending} style={{ flex:1, background:sending?"#1e2830":"#e07b39", border:"none", borderRadius:7, color:sending?"#5a7080":"#fff", fontSize:13, fontWeight:700, padding:"10px 0", cursor:sending?"not-allowed":"pointer", fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase" }}>
+        <button onClick={onBack} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:7, color:"var(--text2)", fontSize:12, padding:"10px 14px", cursor:"pointer", fontFamily:"inherit" }}>← Back</button>
+        <button onClick={handleSend} disabled={sending} style={{ flex:1, background:sending?"var(--border)":"var(--orange)", border:"none", borderRadius:7, color:sending?"var(--text3)":"#fff", fontSize:13, fontWeight:700, padding:"10px 0", cursor:sending?"not-allowed":"pointer", fontFamily:"'Roboto Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase" }}>
           {sending?"Sending…":`Send to ${crewNames.length} Crew Members`}
         </button>
       </div>
@@ -219,16 +233,16 @@ function MiniChecklist({ items, selected, onToggle }) {
   const filtered = items.filter(i=>i.toLowerCase().includes(s.toLowerCase()));
   return (
     <div>
-      <input value={s} onChange={e=>setS(e.target.value)} placeholder="Search…" style={{ width:"100%", background:"#0a1520", border:"1px solid #1e2830", borderRadius:6, padding:"7px 10px", color:"#c0d0dc", fontSize:12, fontFamily:"inherit", outline:"none", marginBottom:6 }} />
+      <input value={s} onChange={e=>setS(e.target.value)} placeholder="Search…" style={{ width:"100%", background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:6, padding:"7px 10px", color:"var(--text)", fontSize:12, fontFamily:"inherit", outline:"none", marginBottom:6 }} />
       <div style={{ maxHeight:175, overflowY:"auto", display:"flex", flexDirection:"column", gap:3 }}>
         {filtered.map((item,i) => {
           const sel = selected.includes(item);
           return (
-            <label key={i} style={{ display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:6, cursor:"pointer", background:sel?"#1a2f3f":"transparent", border:`1px solid ${sel?"#e07b39":"#1a2830"}` }}>
-              <div style={{ width:14, height:14, borderRadius:3, flexShrink:0, border:`2px solid ${sel?"#e07b39":"#3a4a58"}`, background:sel?"#e07b39":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <label key={i} style={{ display:"flex", alignItems:"center", gap:9, padding:"7px 10px", borderRadius:6, cursor:"pointer", background:sel?"rgba(25,118,210,0.2)":"transparent", border:`1px solid ${sel?"var(--orange)":"var(--border)"}` }}>
+              <div style={{ width:14, height:14, borderRadius:3, flexShrink:0, border:`2px solid ${sel?"var(--orange)":"var(--text3)"}`, background:sel?"var(--orange)":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 {sel && <span style={{ color:"#fff", fontSize:9 }}>✓</span>}
               </div>
-              <span style={{ fontSize:12, color:"#c0d0dc" }}>{item}</span>
+              <span style={{ fontSize:12, color:"var(--text)" }}>{item}</span>
               <input type="checkbox" checked={sel} onChange={()=>onToggle(item)} style={{ display:"none" }} />
             </label>
           );
@@ -239,7 +253,7 @@ function MiniChecklist({ items, selected, onToggle }) {
 }
 
 function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasksByProject, projects }) {
-  const c = PROJECT_COLORS[schedule.project.name] || { border:"#2a3a48", dot:"#5a7080", text:"#8aa0b0" };
+  const c = PROJECT_COLORS[schedule.project.name] || { border:"var(--border2)", dot:"var(--text3)", text:"var(--text2)" };
   const [mode, setMode] = useState("view");
   const [tab, setTab] = useState("datetime");
   const [eDate, setEDate] = useState(schedule.date);
@@ -263,36 +277,36 @@ function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasks
   return (
     <div style={{ position:"fixed", inset:0, zIndex:300, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
       <div onClick={onClose} style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.65)", backdropFilter:"blur(2px)" }} />
-      <div style={{ position:"relative", width:"100%", maxWidth:580, background:"#0d1820", border:`1px solid ${c.border}`, borderTop:`3px solid ${c.dot}`, borderRadius:"16px 16px 0 0", padding:"20px 18px 36px", animation:"slideUp 0.25s ease", maxHeight:"88vh", overflowY:"auto" }}>
+      <div style={{ position:"relative", width:"100%", maxWidth:580, background:"var(--bg2)", border:`1px solid ${c.border}`, borderTop:`3px solid ${c.dot}`, borderRadius:"16px 16px 0 0", padding:"20px 18px 36px", animation:"slideUp 0.25s ease", maxHeight:"88vh", overflowY:"auto" }}>
         {/* top bar */}
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
           <div style={{ display:"flex", gap:8 }}>
-            {mode==="view" && <button onClick={()=>setMode("edit")} style={{ background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:6, color:"#e07b39", fontSize:12, padding:"6px 13px", cursor:"pointer", fontFamily:"inherit", fontWeight:600 }}>✏️ Edit Schedule</button>}
+            {mode==="view" && <button onClick={()=>setMode("edit")} style={{ background:"rgba(25,118,210,0.2)", border:"1px solid #e07b39", borderRadius:6, color:"var(--orange)", fontSize:12, padding:"6px 13px", cursor:"pointer", fontFamily:"inherit", fontWeight:600 }}>✏️ Edit Schedule</button>}
             {mode==="edit" && (
               <div style={{ display:"flex", gap:6, alignItems:"center" }}>
                 <StepDot n={1} active label="Edit" />
-                <span style={{ color:"#2a3a48" }}>›</span>
+                <span style={{ color:"var(--border2)" }}>›</span>
                 <StepDot n={2} label="Notify" />
               </div>
             )}
             {mode==="notify" && (
               <div style={{ display:"flex", gap:6, alignItems:"center" }}>
                 <StepDot n="✓" done label="Edit" />
-                <span style={{ color:"#2a3a48" }}>›</span>
+                <span style={{ color:"var(--border2)" }}>›</span>
                 <StepDot n={2} active label="Notify" />
               </div>
             )}
-            {mode==="done" && <div style={{ background:"#0a2010", border:"1px solid #2a5a30", borderRadius:6, padding:"6px 12px", fontSize:12, color:"#6ab07a", fontWeight:600 }}>✓ Updated & crew notified</div>}
+            {mode==="done" && <div style={{ background:"rgba(0,80,30,0.3)", border:"1px solid #2a5a30", borderRadius:6, padding:"6px 12px", fontSize:12, color:"#4caf50", fontWeight:600 }}>✓ Updated & crew notified</div>}
           </div>
-          <button onClick={onClose} style={{ background:"#1a2830", border:"1px solid #2a3a48", borderRadius:6, color:"#8aa0b0", fontSize:12, padding:"5px 10px", cursor:"pointer", fontFamily:"inherit" }}>✕</button>
+          <button onClick={onClose} style={{ background:"var(--border)", border:"1px solid #2a3a48", borderRadius:6, color:"var(--text2)", fontSize:12, padding:"5px 10px", cursor:"pointer", fontFamily:"inherit" }}>✕</button>
         </div>
 
         {/* project header */}
         {mode!=="notify" && (
           <div style={{ marginBottom:16 }}>
-            <div style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:11, color:c.text, marginBottom:2 }}>{fmt12(mode==="edit"?eTime:mode==="done"?eTime:schedule.startTime)}</div>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#fff", marginBottom:2 }}>{schedule.project.name}</div>
-            <div style={{ fontSize:11, color:"#5a7080" }}>📍 {schedule.project.location}</div>
+            <div style={{ fontFamily:"'Roboto Mono',monospace", fontSize:11, color:c.text, marginBottom:2 }}>{fmt12(mode==="edit"?eTime:mode==="done"?eTime:schedule.startTime)}</div>
+            <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#fff", marginBottom:2 }}>{schedule.project.name}</div>
+            <div style={{ fontSize:11, color:"var(--text3)" }}>📍 {schedule.project.location}</div>
           </div>
         )}
 
@@ -307,9 +321,9 @@ function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasks
               <InfoTile label="Start" val={fmt12(mode==="done"?eTime:schedule.startTime)} highlight={mode==="done"&&eTime!==schedule.startTime} small />
             </div>
             <VSect label={`Crew — ${(mode==="done"?eCrew:schedule.crew).length}`}><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{(mode==="done"?eCrew:schedule.crew).map((n,i)=><Tag key={i}>{n}</Tag>)}</div></VSect>
-            <VSect label={`Tasks — ${(mode==="done"?eTasks:schedule.tasks).length}`}><div style={{ display:"flex", flexDirection:"column", gap:4 }}>{(mode==="done"?eTasks:schedule.tasks).map((t,i)=><div key={i} style={{ display:"flex", gap:7, padding:"6px 10px", background:"#0a1520", borderRadius:5, fontSize:12, color:"#a0b8c8", alignItems:"center" }}><span style={{ color:c.dot, fontSize:8 }}>◆</span>{t}</div>)}</div></VSect>
+            <VSect label={`Tasks — ${(mode==="done"?eTasks:schedule.tasks).length}`}><div style={{ display:"flex", flexDirection:"column", gap:4 }}>{(mode==="done"?eTasks:schedule.tasks).map((t,i)=><div key={i} style={{ display:"flex", gap:7, padding:"6px 10px", background:"var(--bg2)", borderRadius:5, fontSize:12, color:"var(--text2)", alignItems:"center" }}><span style={{ color:c.dot, fontSize:8 }}>◆</span>{t}</div>)}</div></VSect>
             {(mode==="done"?eEquip:schedule.equipment).length>0 && <VSect label={`Equipment — ${(mode==="done"?eEquip:schedule.equipment).length}`}><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{(mode==="done"?eEquip:schedule.equipment).map((e,i)=><Tag key={i} mono>{e}</Tag>)}</div></VSect>}
-            {(mode==="done"?eNotes:schedule.notes) && <VSect label="Notes"><div style={{ fontSize:12, color:"#8aa0b0", lineHeight:1.6, whiteSpace:"pre-wrap" }}>{mode==="done"?eNotes:schedule.notes}</div></VSect>}
+            {(mode==="done"?eNotes:schedule.notes) && <VSect label="Notes"><div style={{ fontSize:12, color:"var(--text2)", lineHeight:1.6, whiteSpace:"pre-wrap" }}>{mode==="done"?eNotes:schedule.notes}</div></VSect>}
           </div>
         )}
 
@@ -318,7 +332,7 @@ function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasks
           <>
             <div style={{ display:"flex", gap:4, marginBottom:14, overflowX:"auto" }}>
               {TABS.map(t=>(
-                <button key={t.key} onClick={()=>setTab(t.key)} style={{ flexShrink:0, padding:"6px 10px", borderRadius:7, cursor:"pointer", background:tab===t.key?"#1a2f3f":"#0a1520", border:`1px solid ${tab===t.key?"#e07b39":"#1a2830"}`, color:tab===t.key?"#e07b39":"#5a7080", fontSize:11, fontFamily:"inherit", fontWeight:tab===t.key?700:400, display:"flex", alignItems:"center", gap:4 }}>
+                <button key={t.key} onClick={()=>setTab(t.key)} style={{ flexShrink:0, padding:"6px 10px", borderRadius:7, cursor:"pointer", background:tab===t.key?"rgba(25,118,210,0.2)":"var(--bg2)", border:`1px solid ${tab===t.key?"var(--orange)":"var(--border)"}`, color:tab===t.key?"var(--orange)":"var(--text3)", fontSize:11, fontFamily:"inherit", fontWeight:tab===t.key?700:400, display:"flex", alignItems:"center", gap:4 }}>
                   <span>{t.icon}</span><span>{t.label}</span>
                 </button>
               ))}
@@ -326,8 +340,8 @@ function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasks
             <div style={{ minHeight:190, marginBottom:16 }}>
               {tab==="datetime" && (
                 <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-                  <div><div style={{ fontSize:10, color:"#5a7080", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 }}>Date</div><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={{ width:"100%", background:"#111820", border:`1px solid ${eDate!==schedule.date?"#e07b39":"#2a3a48"}`, borderRadius:7, padding:"10px 12px", color:"#d0dde8", fontSize:13, fontFamily:"'IBM Plex Mono',monospace", outline:"none" }} /></div>
-                  <div><div style={{ fontSize:10, color:"#5a7080", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 }}>Start Time</div><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{ width:"100%", background:"#111820", border:`1px solid ${eTime!==schedule.startTime?"#e07b39":"#2a3a48"}`, borderRadius:7, padding:"10px 12px", color:"#d0dde8", fontSize:13, fontFamily:"'IBM Plex Mono',monospace", outline:"none" }} /></div>
+                  <div><div style={{ fontSize:10, color:"var(--text3)", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 }}>Date</div><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={{ width:"100%", background:"var(--bg3)", border:`1px solid ${eDate!==schedule.date?"var(--orange)":"var(--border2)"}`, borderRadius:7, padding:"10px 12px", color:"var(--text)", fontSize:13, fontFamily:"'Roboto Mono',monospace", outline:"none" }} /></div>
+                  <div><div style={{ fontSize:10, color:"var(--text3)", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 }}>Start Time</div><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{ width:"100%", background:"var(--bg3)", border:`1px solid ${eTime!==schedule.startTime?"var(--orange)":"var(--border2)"}`, borderRadius:7, padding:"10px 12px", color:"var(--text)", fontSize:13, fontFamily:"'Roboto Mono',monospace", outline:"none" }} /></div>
                   {eDate!==schedule.date && <DiffRow icon="📅" was={fmtDateLong(schedule.date)} now={fmtDateLong(eDate)} />}
                   {eTime!==schedule.startTime && <DiffRow icon="⏱" was={fmt12(schedule.startTime)} now={fmt12(eTime)} />}
                 </div>
@@ -335,11 +349,11 @@ function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasks
               {tab==="crew" && <div><SelectedTags items={eCrew} onRemove={tgCrew} /><MiniChecklist items={allCrewNames} selected={eCrew} onToggle={tgCrew} /></div>}
               {tab==="tasks" && <div><SelectedTags items={eTasks} onRemove={tgTask} /><MiniChecklist items={projTasks} selected={eTasks} onToggle={tgTask} /></div>}
               {tab==="equipment" && <div><SelectedTags items={eEquip} onRemove={tgEquip} mono /><MiniChecklist items={allEquipNames} selected={eEquip} onToggle={tgEquip} /></div>}
-              {tab==="notes" && <div><textarea value={eNotes} onChange={e=>setENotes(e.target.value)} rows={6} placeholder="Site instructions, safety notes, delivery details…" style={{ width:"100%", background:"#0a1520", border:`1px solid ${eNotes!==(schedule.notes||"")?"#e07b39":"#1e2830"}`, borderRadius:8, padding:"10px 12px", color:"#c0d0dc", fontSize:13, fontFamily:"'Barlow',sans-serif", resize:"vertical", lineHeight:1.6, outline:"none" }} /><div style={{ fontSize:10, color:"#2a3a48", textAlign:"right", marginTop:4 }}>{eNotes.length} chars</div></div>}
+              {tab==="notes" && <div><textarea value={eNotes} onChange={e=>setENotes(e.target.value)} rows={6} placeholder="Site instructions, safety notes, delivery details…" style={{ width:"100%", background:"var(--bg2)", border:`1px solid ${eNotes!==(schedule.notes||"")?"var(--orange)":"var(--border)"}`, borderRadius:8, padding:"10px 12px", color:"var(--text)", fontSize:13, fontFamily:"'Roboto',sans-serif", resize:"vertical", lineHeight:1.6, outline:"none" }} /><div style={{ fontSize:10, color:"var(--border2)", textAlign:"right", marginTop:4 }}>{eNotes.length} chars</div></div>}
             </div>
             <div style={{ display:"flex", gap:8 }}>
-              <button onClick={doCancel} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:7, color:"#8aa0b0", fontSize:12, padding:"10px 14px", cursor:"pointer", fontFamily:"inherit" }}>Cancel</button>
-              <button onClick={doSave} disabled={!hasChanges} style={{ flex:1, background:hasChanges?"#e07b39":"#1e2830", border:"none", borderRadius:7, color:hasChanges?"#fff":"#3a4a58", fontSize:13, fontWeight:700, padding:"10px 0", cursor:hasChanges?"pointer":"not-allowed", fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase" }}>{hasChanges?"Save & Notify Crew →":"No Changes Yet"}</button>
+              <button onClick={doCancel} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:7, color:"var(--text2)", fontSize:12, padding:"10px 14px", cursor:"pointer", fontFamily:"inherit" }}>Cancel</button>
+              <button onClick={doSave} disabled={!hasChanges} style={{ flex:1, background:hasChanges?"var(--orange)":"var(--border)", border:"none", borderRadius:7, color:hasChanges?"#fff":"var(--text3)", fontSize:13, fontWeight:700, padding:"10px 0", cursor:hasChanges?"pointer":"not-allowed", fontFamily:"'Roboto Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase" }}>{hasChanges?"Save & Notify Crew →":"No Changes Yet"}</button>
             </div>
           </>
         )}
@@ -351,45 +365,45 @@ function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasks
 function StepDot({ n, active, done, label }) {
   return (
     <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-      <div style={{ width:20, height:20, borderRadius:"50%", fontSize:9, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", background:done?"#2a5a30":active?"#e07b39":"#1e2830", color:done?"#6ab07a":active?"#fff":"#3a5060", border:`1px solid ${active?"#e07b39":"#2a3a48"}` }}>{n}</div>
-      <span style={{ fontSize:10, color:done?"#6ab07a":active?"#e07b39":"#3a5060", textTransform:"uppercase", letterSpacing:"0.06em" }}>{label}</span>
+      <div style={{ width:20, height:20, borderRadius:"50%", fontSize:9, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", background:done?"#1b5e20":active?"var(--orange)":"var(--border)", color:done?"#4caf50":active?"#fff":"var(--text3)", border:`1px solid ${active?"var(--orange)":"var(--border2)"}` }}>{n}</div>
+      <span style={{ fontSize:10, color:done?"#4caf50":active?"var(--orange)":"var(--text3)", textTransform:"uppercase", letterSpacing:"0.06em" }}>{label}</span>
     </div>
   );
 }
 function InfoTile({ label, val, highlight, small }) {
-  return <div style={{ flex:small?0:1, width:small?120:undefined, background:"#0a1520", border:"1px solid #1a2830", borderRadius:8, padding:"9px 12px" }}><div style={{ fontSize:9, color:"#5a7080", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:3 }}>{label}</div><div style={{ fontSize:12, color:highlight?"#e07b39":"#c0d0dc", fontFamily:"'IBM Plex Mono',monospace" }}>{val}</div></div>;
+  return <div style={{ flex:small?0:1, width:small?120:undefined, background:"var(--bg2)", border:"1px solid #1a2830", borderRadius:8, padding:"9px 12px" }}><div style={{ fontSize:9, color:"var(--text3)", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:3 }}>{label}</div><div style={{ fontSize:12, color:highlight?"var(--orange)":"var(--text)", fontFamily:"'Roboto Mono',monospace" }}>{val}</div></div>;
 }
 function VSect({ label, children }) {
-  return <div><div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:7 }}>{label}</div>{children}</div>;
+  return <div><div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:7 }}>{label}</div>{children}</div>;
 }
 function Tag({ children, mono }) {
-  return <span style={{ fontSize:11, color:"#c0d0dc", background:"#111820", border:"1px solid #1e2830", borderRadius:5, padding:"3px 8px", fontFamily:mono?"'IBM Plex Mono',monospace":undefined }}>{children}</span>;
+  return <span style={{ fontSize:11, color:"var(--text)", background:"var(--bg3)", border:"1px solid #1e2830", borderRadius:5, padding:"3px 8px", fontFamily:mono?"'Roboto Mono',monospace":undefined }}>{children}</span>;
 }
 function SelectedTags({ items, onRemove, mono }) {
   return (
     <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:8 }}>
       {items.map((item,i) => (
-        <span key={i} onClick={()=>onRemove(item)} style={{ fontSize:11, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", display:"inline-flex", alignItems:"center", gap:5, fontFamily:mono?"'IBM Plex Mono',monospace":undefined }}>
+        <span key={i} onClick={()=>onRemove(item)} style={{ fontSize:11, color:"var(--orange)", background:"rgba(25,118,210,0.2)", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", display:"inline-flex", alignItems:"center", gap:5, fontFamily:mono?"'Roboto Mono',monospace":undefined }}>
           {item} <span style={{ fontSize:13 }}>×</span>
         </span>
       ))}
-      {items.length===0 && <span style={{ fontSize:12, color:"#3a5060", fontStyle:"italic" }}>None selected</span>}
+      {items.length===0 && <span style={{ fontSize:12, color:"var(--text3)", fontStyle:"italic" }}>None selected</span>}
     </div>
   );
 }
 function DiffRow({ icon, was, now }) {
-  return <div style={{ fontSize:11, fontFamily:"'IBM Plex Mono',monospace", lineHeight:1.7, padding:"7px 10px", background:"#0a1520", borderRadius:6 }}><span style={{ color:"#3a5060" }}>{icon} Was: </span><span style={{ color:"#5a7080", textDecoration:"line-through" }}>{was}</span><br /><span style={{ color:"#3a5060" }}>&nbsp;&nbsp;&nbsp;Now: </span><span style={{ color:"#e07b39", fontWeight:600 }}>{now}</span></div>;
+  return <div style={{ fontSize:11, fontFamily:"'Roboto Mono',monospace", lineHeight:1.7, padding:"7px 10px", background:"var(--bg2)", borderRadius:6 }}><span style={{ color:"var(--text3)" }}>{icon} Was: </span><span style={{ color:"var(--text3)", textDecoration:"line-through" }}>{was}</span><br /><span style={{ color:"var(--text3)" }}>&nbsp;&nbsp;&nbsp;Now: </span><span style={{ color:"var(--orange)", fontWeight:600 }}>{now}</span></div>;
 }
 
 function JobPill({ s, onClick, compact }) {
-  const c = PROJECT_COLORS[s.project.name] || { bg:"#1a2830", border:"#2a3a48", dot:"#5a7080", text:"#8aa0b0" };
+  const c = PROJECT_COLORS[s.project.name] || { bg:"var(--border)", border:"var(--border2)", dot:"var(--text3)", text:"var(--text2)" };
   return (
     <div className="job-pill" onClick={()=>onClick(s)} style={{ background:c.bg, border:`1px solid ${c.border}`, borderLeft:`3px solid ${c.dot}`, borderRadius:7, padding:compact?"7px 8px":"10px 12px", cursor:"pointer" }}>
-      <div style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:compact?9:11, color:c.text, marginBottom:3 }}>{fmt12(s.startTime)}</div>
-      <div style={{ fontSize:compact?10:13, fontWeight:600, color:"#d0dde8", lineHeight:1.3, marginBottom:compact?4:6 }}>{s.project.name}</div>
+      <div style={{ fontFamily:"'Roboto Mono',monospace", fontSize:compact?9:11, color:c.text, marginBottom:3 }}>{fmt12(s.startTime)}</div>
+      <div style={{ fontSize:compact?10:13, fontWeight:600, color:"var(--text)", lineHeight:1.3, marginBottom:compact?4:6 }}>{s.project.name}</div>
       <div style={{ display:"flex", gap:5 }}>
-        <span style={{ fontSize:9, color:"#5a7080", background:"#0a1520", borderRadius:4, padding:"2px 5px", fontFamily:"'IBM Plex Mono',monospace" }}>👷 {s.crew.length}</span>
-        <span style={{ fontSize:9, color:"#5a7080", background:"#0a1520", borderRadius:4, padding:"2px 5px", fontFamily:"'IBM Plex Mono',monospace" }}>✅ {s.tasks.length}</span>
+        <span style={{ fontSize:9, color:"var(--text3)", background:"var(--bg2)", borderRadius:4, padding:"2px 5px", fontFamily:"'Roboto Mono',monospace" }}>👷 {s.crew.length}</span>
+        <span style={{ fontSize:9, color:"var(--text3)", background:"var(--bg2)", borderRadius:4, padding:"2px 5px", fontFamily:"'Roboto Mono',monospace" }}>✅ {s.tasks.length}</span>
       </div>
     </div>
   );
@@ -398,7 +412,7 @@ function JobPill({ s, onClick, compact }) {
 function ProjectLegend({ projects }) {
   return (
     <div style={{ display:"flex", flexWrap:"wrap", gap:7, marginBottom:20 }}>
-      {projects.map(p => { const c=PROJECT_COLORS[p]||{dot:"#5a7080",text:"#8aa0b0",bg:"#0d1820",border:"#2a3a48"}; return (
+      {projects.map(p => { const c=PROJECT_COLORS[p]||{dot:"var(--text3)",text:"var(--text2)",bg:"var(--bg2)",border:"var(--border2)"}; return (
         <div key={p} style={{ display:"flex", alignItems:"center", gap:6, padding:"4px 11px", background:c.bg, border:`1px solid ${c.border}`, borderRadius:20, fontSize:11, color:c.text }}>
           <span style={{ width:7, height:7, borderRadius:"50%", background:c.dot, flexShrink:0 }} />{p}
         </div>
@@ -415,17 +429,17 @@ function PortraitCalendar({ weekDates, schedules, today, focusDate, setFocusDate
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
       {/* 5-tab strip */}
-      <div style={{ display:"flex", gap:5, marginBottom:18, background:"#0d1820", border:"1px solid #1e2830", borderRadius:12, padding:7 }}>
+      <div style={{ display:"flex", gap:5, marginBottom:18, background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:12, padding:7 }}>
         {weekDates.map((date,i) => {
           const sel=date===focusDate, tod=date===today, cnt=schedules.filter(s=>s.date===date).length;
           const dn=new Date(date+"T12:00:00").toLocaleDateString("en-US",{weekday:"short"});
           const dd=new Date(date+"T12:00:00").getDate();
           return (
-            <button key={date} onClick={()=>setFocusDate(date)} style={{ flex:1, background:sel?"#1a2f3f":"transparent", border:`1px solid ${sel?"#e07b39":"transparent"}`, borderRadius:8, padding:"7px 3px", cursor:"pointer", textAlign:"center" }}>
-              <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:sel?"#e07b39":tod?"#c07840":"#5a7080" }}>{dn}</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:17, color:sel?"#fff":"#6a8090", lineHeight:1 }}>{dd}</div>
+            <button key={date} onClick={()=>setFocusDate(date)} style={{ flex:1, background:sel?"rgba(25,118,210,0.2)":"transparent", border:`1px solid ${sel?"var(--orange)":"transparent"}`, borderRadius:8, padding:"7px 3px", cursor:"pointer", textAlign:"center" }}>
+              <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:sel?"var(--orange)":tod?"var(--orange)":"var(--text3)" }}>{dn}</div>
+              <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:17, color:sel?"#fff":"#6a8090", lineHeight:1 }}>{dd}</div>
               <div style={{ display:"flex", justifyContent:"center", gap:3, marginTop:4, minHeight:5 }}>
-                {Array.from({length:Math.min(cnt,3)}).map((_,di)=><span key={di} style={{ width:4, height:4, borderRadius:"50%", background:sel?"#e07b39":"#2a3a48", display:"inline-block" }} />)}
+                {Array.from({length:Math.min(cnt,3)}).map((_,di)=><span key={di} style={{ width:4, height:4, borderRadius:"50%", background:sel?"var(--orange)":"var(--border2)", display:"inline-block" }} />)}
               </div>
             </button>
           );
@@ -434,20 +448,20 @@ function PortraitCalendar({ weekDates, schedules, today, focusDate, setFocusDate
       {/* Day header */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
         <div>
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, color:isToday?"#e07b39":"#fff" }}>
+          <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:20, color:isToday?"var(--orange)":"#fff" }}>
             {new Date(focusDate+"T12:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}
-            {isToday && <span style={{ fontSize:11, color:"#e07b39", marginLeft:8, fontFamily:"'Barlow',sans-serif" }}>● Today</span>}
+            {isToday && <span style={{ fontSize:11, color:"var(--orange)", marginLeft:8, fontFamily:"'Roboto',sans-serif" }}>● Today</span>}
           </div>
-          <div style={{ fontSize:11, color:"#5a7080", marginTop:1, fontFamily:"'IBM Plex Mono',monospace" }}>{daySched.length} job{daySched.length!==1?"s":""} · {totalCrew} crew</div>
+          <div style={{ fontSize:11, color:"var(--text3)", marginTop:1, fontFamily:"'Roboto Mono',monospace" }}>{daySched.length} job{daySched.length!==1?"s":""} · {totalCrew} crew</div>
         </div>
         <div style={{ display:"flex", gap:5 }}>
-          <button onClick={()=>focusIdx>0&&setFocusDate(weekDates[focusIdx-1])} disabled={focusIdx===0} style={{ background:"#0d1820", border:"1px solid #2a3a48", borderRadius:7, color:focusIdx===0?"#2a3a48":"#8aa0b0", padding:"6px 11px", cursor:focusIdx===0?"default":"pointer", fontSize:14, fontFamily:"inherit" }}>‹</button>
-          <button onClick={()=>focusIdx<4&&setFocusDate(weekDates[focusIdx+1])} disabled={focusIdx===4} style={{ background:"#0d1820", border:"1px solid #2a3a48", borderRadius:7, color:focusIdx===4?"#2a3a48":"#8aa0b0", padding:"6px 11px", cursor:focusIdx===4?"default":"pointer", fontSize:14, fontFamily:"inherit" }}>›</button>
+          <button onClick={()=>focusIdx>0&&setFocusDate(weekDates[focusIdx-1])} disabled={focusIdx===0} style={{ background:"var(--bg2)", border:"1px solid #2a3a48", borderRadius:7, color:focusIdx===0?"var(--border2)":"var(--text2)", padding:"6px 11px", cursor:focusIdx===0?"default":"pointer", fontSize:14, fontFamily:"inherit" }}>‹</button>
+          <button onClick={()=>focusIdx<4&&setFocusDate(weekDates[focusIdx+1])} disabled={focusIdx===4} style={{ background:"var(--bg2)", border:"1px solid #2a3a48", borderRadius:7, color:focusIdx===4?"var(--border2)":"var(--text2)", padding:"6px 11px", cursor:focusIdx===4?"default":"pointer", fontSize:14, fontFamily:"inherit" }}>›</button>
         </div>
       </div>
       {/* Cards */}
       {daySched.length===0
-        ? <div style={{ textAlign:"center", padding:"50px 20px", color:"#2a3a48", fontSize:13, fontStyle:"italic", background:"#0d1820", borderRadius:12, border:"1px solid #1a2830" }}>No jobs scheduled</div>
+        ? <div style={{ textAlign:"center", padding:"50px 20px", color:"var(--border2)", fontSize:13, fontStyle:"italic", background:"var(--bg2)", borderRadius:12, border:"1px solid #1a2830" }}>No jobs scheduled</div>
         : <div style={{ display:"flex", flexDirection:"column", gap:10 }}>{daySched.map(s=><JobPill key={s.id} s={s} onClick={onJobClick} />)}</div>
       }
     </div>
@@ -465,14 +479,14 @@ function LandscapeCalendar({ weekDates, schedules, today, onJobClick, weekProjec
           const dn=new Date(date+"T12:00:00").toLocaleDateString("en-US",{weekday:"short"});
           const dm=new Date(date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
           return (
-            <div key={date} style={{ background:"#0d1820", border:`1px solid ${isToday?"#e07b39":"#1e2830"}`, borderRadius:12, overflow:"hidden", minHeight:240, animation:`fadeUp 0.3s ease ${di*0.06}s both` }}>
-              <div style={{ padding:"10px 10px 8px", borderBottom:"1px solid #1a2830", background:isToday?"#1a2a18":"#0d1820" }}>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:15, color:isToday?"#e07b39":"#8aa0b0", textTransform:"uppercase" }}>{dn}</div>
-                <div style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:isToday?"#c07840":"#3a5060", marginTop:1 }}>{dm}</div>
-                {isToday && <div style={{ fontSize:8, fontWeight:700, color:"#e07b39", textTransform:"uppercase", marginTop:3 }}>● Today</div>}
+            <div key={date} style={{ background:"var(--bg2)", border:`1px solid ${isToday?"var(--orange)":"var(--border)"}`, borderRadius:12, overflow:"hidden", minHeight:240, animation:`fadeUp 0.3s ease ${di*0.06}s both` }}>
+              <div style={{ padding:"10px 10px 8px", borderBottom:"1px solid #1a2830", background:isToday?"#1a2a18":"var(--bg2)" }}>
+                <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:15, color:isToday?"var(--orange)":"var(--text2)", textTransform:"uppercase" }}>{dn}</div>
+                <div style={{ fontFamily:"'Roboto Mono',monospace", fontSize:10, color:isToday?"var(--orange)":"var(--text3)", marginTop:1 }}>{dm}</div>
+                {isToday && <div style={{ fontSize:8, fontWeight:700, color:"var(--orange)", textTransform:"uppercase", marginTop:3 }}>● Today</div>}
               </div>
               <div style={{ padding:7, display:"flex", flexDirection:"column", gap:5 }}>
-                {ds.length===0 ? <div style={{ padding:"18px 6px", textAlign:"center", fontSize:10, color:"#2a3a48", fontStyle:"italic" }}>No jobs</div>
+                {ds.length===0 ? <div style={{ padding:"18px 6px", textAlign:"center", fontSize:10, color:"var(--border2)", fontStyle:"italic" }}>No jobs</div>
                   : ds.map(s=><JobPill key={s.id} s={s} onClick={onJobClick} compact />)}
               </div>
             </div>
@@ -485,11 +499,11 @@ function LandscapeCalendar({ weekDates, schedules, today, onJobClick, weekProjec
           const crew=new Set(ds.flatMap(s=>s.crew)).size;
           if(ds.length===0) return <div key={date} />;
           return (
-            <div key={date} style={{ background:"#0a1520", border:"1px solid #1a2830", borderRadius:7, padding:"6px 8px", display:"flex", justifyContent:"space-around" }}>
+            <div key={date} style={{ background:"var(--bg2)", border:"1px solid #1a2830", borderRadius:7, padding:"6px 8px", display:"flex", justifyContent:"space-around" }}>
               {[{v:ds.length,l:"jobs"},{v:crew,l:"crew"}].map((s,i)=>(
                 <div key={i} style={{ textAlign:"center" }}>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, color:"#e07b39" }}>{s.v}</div>
-                  <div style={{ fontSize:8, color:"#3a5060", letterSpacing:"0.08em", textTransform:"uppercase" }}>{s.l}</div>
+                  <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:16, color:"var(--orange)" }}>{s.v}</div>
+                  <div style={{ fontSize:8, color:"var(--text3)", letterSpacing:"0.08em", textTransform:"uppercase" }}>{s.l}</div>
                 </div>
               ))}
             </div>
@@ -520,10 +534,10 @@ function WeekCalendarScreen({ schedules, onSave, employees, equipmentList, tasks
       <div style={{ maxWidth:land?1000:520, margin:"0 auto" }}>
         {/* week nav row */}
         <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", marginBottom:20, gap:6 }}>
-          <button className="nav-btn" onClick={prevWeek} style={{ background:"#0d1820", border:"1px solid #2a3a48", borderRadius:7, color:"#8aa0b0", padding:"7px 11px", cursor:"pointer", fontSize:14 }}>‹</button>
-          <div style={{ padding:"7px 12px", background:"#0d1820", border:"1px solid #1e2830", borderRadius:7, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:14, color:"#c0d0dc", minWidth:land?160:110, textAlign:"center" }}>{weekLabel}</div>
-          <button className="nav-btn" onClick={nextWeek} style={{ background:"#0d1820", border:"1px solid #2a3a48", borderRadius:7, color:"#8aa0b0", padding:"7px 11px", cursor:"pointer", fontSize:14 }}>›</button>
-          <button className="nav-btn" onClick={goToday} style={{ background:"#0d1820", border:"1px solid #2a3a48", borderRadius:7, color:"#8aa0b0", padding:"7px 10px", cursor:"pointer", fontSize:11, letterSpacing:"0.06em" }}>TODAY</button>
+          <button className="nav-btn" onClick={prevWeek} style={{ background:"var(--bg2)", border:"1px solid #2a3a48", borderRadius:7, color:"var(--text2)", padding:"7px 11px", cursor:"pointer", fontSize:14 }}>‹</button>
+          <div style={{ padding:"7px 12px", background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:7, fontFamily:"'Roboto Condensed',sans-serif", fontWeight:700, fontSize:14, color:"var(--text)", minWidth:land?160:110, textAlign:"center" }}>{weekLabel}</div>
+          <button className="nav-btn" onClick={nextWeek} style={{ background:"var(--bg2)", border:"1px solid #2a3a48", borderRadius:7, color:"var(--text2)", padding:"7px 11px", cursor:"pointer", fontSize:14 }}>›</button>
+          <button className="nav-btn" onClick={goToday} style={{ background:"var(--bg2)", border:"1px solid #2a3a48", borderRadius:7, color:"var(--text2)", padding:"7px 10px", cursor:"pointer", fontSize:11, letterSpacing:"0.06em" }}>TODAY</button>
         </div>
         <div style={{ animation:"fadeIn 0.2s ease" }}>
           {land
@@ -545,13 +559,13 @@ function CheckList({ items, selected, onToggle, labelKey="name", subKey }) {
   const filtered=items.filter(i=>i[labelKey].toLowerCase().includes(s.toLowerCase()));
   return (
     <div>
-      <input value={s} onChange={e=>setS(e.target.value)} placeholder="Search…" style={{ width:"100%", boxSizing:"border-box", background:"#111820", border:"1px solid #2a3a48", borderRadius:6, padding:"8px 12px", color:"#d0dde8", fontSize:13, marginBottom:8, outline:"none", fontFamily:"inherit" }} />
+      <input value={s} onChange={e=>setS(e.target.value)} placeholder="Search…" style={{ width:"100%", boxSizing:"border-box", background:"var(--bg3)", border:"1px solid #2a3a48", borderRadius:6, padding:"8px 12px", color:"var(--text)", fontSize:13, marginBottom:8, outline:"none", fontFamily:"inherit" }} />
       <div style={{ maxHeight:200, overflowY:"auto", display:"flex", flexDirection:"column", gap:4 }}>
         {filtered.map(item=>{ const sel=selected.includes(item.id??item); return (
-          <label key={item.id??item} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 12px", borderRadius:7, cursor:"pointer", background:sel?"#1a2f3f":"transparent", border:`1px solid ${sel?"#e07b39":"#1e2830"}` }}>
-            <div style={{ width:16, height:16, borderRadius:4, flexShrink:0, border:`2px solid ${sel?"#e07b39":"#3a4a58"}`, background:sel?"#e07b39":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:10 }}>✓</span>}</div>
-            <span style={{ flex:1, fontSize:13, color:"#c0d0dc" }}>{item[labelKey]}</span>
-            {subKey&&<span style={{ fontSize:11, color:"#5a7080" }}>{item[subKey]}</span>}
+          <label key={item.id??item} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 12px", borderRadius:7, cursor:"pointer", background:sel?"rgba(25,118,210,0.2)":"transparent", border:`1px solid ${sel?"var(--orange)":"var(--border)"}` }}>
+            <div style={{ width:16, height:16, borderRadius:4, flexShrink:0, border:`2px solid ${sel?"var(--orange)":"var(--text3)"}`, background:sel?"var(--orange)":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:10 }}>✓</span>}</div>
+            <span style={{ flex:1, fontSize:13, color:"var(--text)" }}>{item[labelKey]}</span>
+            {subKey&&<span style={{ fontSize:11, color:"var(--text3)" }}>{item[subKey]}</span>}
             <input type="checkbox" checked={sel} onChange={()=>onToggle(item.id??item)} style={{ display:"none" }} />
           </label>
         ); })}
@@ -562,10 +576,10 @@ function CheckList({ items, selected, onToggle, labelKey="name", subKey }) {
 
 function SectionCard({ step, label, done, children }) {
   return (
-    <div style={{ background:"#0d1820", border:"1px solid #1e2830", borderRadius:12, padding:22, animation:"fadeUp 0.3s ease" }}>
+    <div style={{ background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:12, padding:22, animation:"fadeUp 0.3s ease" }}>
       <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
-        <div style={{ width:26, height:26, borderRadius:"50%", background:done?"#e07b39":"#1e2830", border:done?"none":"2px solid #3a4a58", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700, color:done?"#fff":"#5a7080", flexShrink:0 }}>{done?"✓":step}</div>
-        <span style={{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:done?"#e07b39":"#8aa0b0", textTransform:"uppercase" }}>{label}</span>
+        <div style={{ width:26, height:26, borderRadius:"50%", background:done?"var(--orange)":"var(--border)", border:done?"none":"2px solid #3a4a58", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700, color:done?"#fff":"var(--text3)", flexShrink:0 }}>{done?"✓":step}</div>
+        <span style={{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:done?"var(--orange)":"var(--text2)", textTransform:"uppercase" }}>{label}</span>
       </div>
       {children}
     </div>
@@ -625,9 +639,9 @@ function AddScheduleScreen({ onScheduleAdded, projects, employees, tasksByProjec
   if (mode==="done") return (
     <div style={{ padding:"32px 16px", maxWidth:560, margin:"0 auto", textAlign:"center" }}>
       <div style={{ fontSize:40, marginBottom:14 }}>✅</div>
-      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:24, color:"#6ab07a", marginBottom:8 }}>Schedule Added</div>
-      <div style={{ fontSize:13, color:"#5a7080", marginBottom:28 }}>{selProj?.name} · {fmtDateLong(date)}</div>
-      <button onClick={()=>{ setDate("");setTime("");setProjId(null);setEmpIds([]);setTasks([]);setEquipIds([]);setNotes("");setMode("form"); }} style={{ background:"#e07b39", border:"none", borderRadius:9, color:"#fff", fontSize:14, fontWeight:700, padding:"12px 28px", cursor:"pointer", fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase" }}>Add Another Schedule</button>
+      <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:24, color:"#4caf50", marginBottom:8 }}>Schedule Added</div>
+      <div style={{ fontSize:13, color:"var(--text3)", marginBottom:28 }}>{selProj?.name} · {fmtDateLong(date)}</div>
+      <button onClick={()=>{ setDate("");setTime("");setProjId(null);setEmpIds([]);setTasks([]);setEquipIds([]);setNotes("");setMode("form"); }} style={{ background:"var(--orange)", border:"none", borderRadius:9, color:"#fff", fontSize:14, fontWeight:700, padding:"12px 28px", cursor:"pointer", fontFamily:"'Roboto Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase" }}>Add Another Schedule</button>
     </div>
   );
 
@@ -638,25 +652,25 @@ function AddScheduleScreen({ onScheduleAdded, projects, employees, tasksByProjec
       <SectionCard step={1} label="Date & Start Time" done={!!date}>
         <div style={{ display:"flex", gap:10 }}>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:10, color:"#5a7080", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:5 }}>Date</div>
-            <input type="date" value={date} min={today} onChange={e=>setDate(e.target.value)} style={{ width:"100%", background:"#111820", border:`1px solid ${date?"#e07b39":"#2a3a48"}`, borderRadius:8, padding:"11px 13px", color:"#d0dde8", fontSize:14, fontFamily:"'IBM Plex Mono',monospace", outline:"none" }} />
+            <div style={{ fontSize:10, color:"var(--text3)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:5 }}>Date</div>
+            <input type="date" value={date} min={today} onChange={e=>setDate(e.target.value)} style={{ width:"100%", background:"var(--bg3)", border:`1px solid ${date?"var(--orange)":"var(--border2)"}`, borderRadius:8, padding:"11px 13px", color:"var(--text)", fontSize:14, fontFamily:"'Roboto Mono',monospace", outline:"none" }} />
           </div>
           <div style={{ width:150 }}>
-            <div style={{ fontSize:10, color:"#5a7080", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:5 }}>Start Time</div>
-            <input type="time" value={time} onChange={e=>setTime(e.target.value)} style={{ width:"100%", background:"#111820", border:`1px solid ${time?"#e07b39":"#2a3a48"}`, borderRadius:8, padding:"11px 13px", color:"#d0dde8", fontSize:14, fontFamily:"'IBM Plex Mono',monospace", outline:"none" }} />
+            <div style={{ fontSize:10, color:"var(--text3)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:5 }}>Start Time</div>
+            <input type="time" value={time} onChange={e=>setTime(e.target.value)} style={{ width:"100%", background:"var(--bg3)", border:`1px solid ${time?"var(--orange)":"var(--border2)"}`, borderRadius:8, padding:"11px 13px", color:"var(--text)", fontSize:14, fontFamily:"'Roboto Mono',monospace", outline:"none" }} />
           </div>
         </div>
-        {(date||time) && <div style={{ marginTop:8, fontSize:11, color:"#e07b39", fontFamily:"'IBM Plex Mono',monospace" }}>{date&&fmtDateLong(date)}{date&&time&&" · "}{time&&fmt12(time)}</div>}
+        {(date||time) && <div style={{ marginTop:8, fontSize:11, color:"var(--orange)", fontFamily:"'Roboto Mono',monospace" }}>{date&&fmtDateLong(date)}{date&&time&&" · "}{time&&fmt12(time)}</div>}
       </SectionCard>
 
       {/* Project */}
       <SectionCard step={2} label="Select Project" done={!!projId}>
         <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
           {projects.map(p=>(
-            <button key={p.id} onClick={()=>{ setProjId(p.id); setTasks([]); }} style={{ display:"flex", alignItems:"center", gap:12, background:projId===p.id?"#1a2f3f":"transparent", border:`1px solid ${projId===p.id?"#e07b39":"#1e2830"}`, borderRadius:8, padding:"10px 14px", cursor:"pointer", textAlign:"left" }}>
-              <span style={{ flex:1, fontSize:13, fontWeight:600, color:"#d0dde8", fontFamily:"inherit" }}>{p.name}</span>
-              <span style={{ fontSize:11, color:"#5a7080" }}>{p.location}</span>
-              {projId===p.id && <span style={{ color:"#e07b39", fontSize:11 }}>✓</span>}
+            <button key={p.id} onClick={()=>{ setProjId(p.id); setTasks([]); }} style={{ display:"flex", alignItems:"center", gap:12, background:projId===p.id?"rgba(25,118,210,0.2)":"transparent", border:`1px solid ${projId===p.id?"var(--orange)":"var(--border)"}`, borderRadius:8, padding:"10px 14px", cursor:"pointer", textAlign:"left" }}>
+              <span style={{ flex:1, fontSize:13, fontWeight:600, color:"var(--text)", fontFamily:"inherit" }}>{p.name}</span>
+              <span style={{ fontSize:11, color:"var(--text3)" }}>{p.location}</span>
+              {projId===p.id && <span style={{ color:"var(--orange)", fontSize:11 }}>✓</span>}
             </button>
           ))}
         </div>
@@ -664,17 +678,17 @@ function AddScheduleScreen({ onScheduleAdded, projects, employees, tasksByProjec
 
       {/* Crew */}
       <SectionCard step={3} label="Assign Crew" done={empIds.length>0}>
-        {empIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{employees.filter(e=>empIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEmp(e.id)} style={{ fontSize:12, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 9px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
+        {empIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{employees.filter(e=>empIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEmp(e.id)} style={{ fontSize:12, color:"var(--orange)", background:"rgba(25,118,210,0.2)", border:"1px solid #e07b39", borderRadius:5, padding:"3px 9px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
         <div style={{ maxHeight:220, overflowY:"auto", display:"flex", flexDirection:"column", gap:3 }}>
           {employees.map(e => {
             const sel = empIds.includes(e.id);
             const booked = !sel && assignedOnDate.has(e.name);
             return (
-              <label key={e.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 12px", borderRadius:7, cursor:booked?"not-allowed":"pointer", background:sel?"#1a2f3f":booked?"#0a1018":"transparent", border:`1px solid ${sel?"#e07b39":booked?"#1a2830":"#1e2830"}`, opacity:booked?0.5:1 }}>
-                <div style={{ width:16, height:16, borderRadius:4, flexShrink:0, border:`2px solid ${sel?"#e07b39":"#3a4a58"}`, background:sel?"#e07b39":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:10 }}>✓</span>}</div>
-                <span style={{ flex:1, fontSize:13, color:booked?"#3a5060":"#c0d0dc" }}>{e.name}</span>
-                <span style={{ fontSize:11, color:"#5a7080" }}>{e.role}</span>
-                {booked && <span style={{ fontSize:9, color:"#c07040", background:"#2a1808", border:"1px solid #4a2810", borderRadius:4, padding:"2px 6px", letterSpacing:"0.06em" }}>ASSIGNED</span>}
+              <label key={e.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 12px", borderRadius:7, cursor:booked?"not-allowed":"pointer", background:sel?"rgba(25,118,210,0.2)":booked?"var(--bg2)":"transparent", border:`1px solid ${sel?"var(--orange)":booked?"var(--border)":"var(--border)"}`, opacity:booked?0.5:1 }}>
+                <div style={{ width:16, height:16, borderRadius:4, flexShrink:0, border:`2px solid ${sel?"var(--orange)":"var(--text3)"}`, background:sel?"var(--orange)":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:10 }}>✓</span>}</div>
+                <span style={{ flex:1, fontSize:13, color:booked?"var(--text3)":"var(--text)" }}>{e.name}</span>
+                <span style={{ fontSize:11, color:"var(--text3)" }}>{e.role}</span>
+                {booked && <span style={{ fontSize:9, color:"var(--orange)", background:"#2a1808", border:"1px solid #4a2810", borderRadius:4, padding:"2px 6px", letterSpacing:"0.06em" }}>ASSIGNED</span>}
                 <input type="checkbox" checked={sel} onChange={()=>!booked&&tgEmp(e.id)} style={{ display:"none" }} />
               </label>
             );
@@ -684,15 +698,15 @@ function AddScheduleScreen({ onScheduleAdded, projects, employees, tasksByProjec
 
       {/* Tasks */}
       <SectionCard step={4} label="Select Tasks" done={tasks.length>0}>
-        {!projId ? <div style={{ fontSize:12, color:"#5a7080", fontStyle:"italic" }}>Select a project first.</div> : (
+        {!projId ? <div style={{ fontSize:12, color:"var(--text3)", fontStyle:"italic" }}>Select a project first.</div> : (
           <>
-            {tasks.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{tasks.map((t,i)=><span key={i} onClick={()=>tgTask(t)} style={{ fontSize:11, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{t} ×</span>)}</div>}
-            <div style={{ fontSize:10, color:"#5a7080", marginBottom:7 }}>From estimate: <span style={{ color:"#8aa0b0" }}>{selProj?.name}</span></div>
+            {tasks.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{tasks.map((t,i)=><span key={i} onClick={()=>tgTask(t)} style={{ fontSize:11, color:"var(--orange)", background:"rgba(25,118,210,0.2)", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{t} ×</span>)}</div>}
+            <div style={{ fontSize:10, color:"var(--text3)", marginBottom:7 }}>From estimate: <span style={{ color:"var(--text2)" }}>{selProj?.name}</span></div>
             <div style={{ maxHeight:200, overflowY:"auto", display:"flex", flexDirection:"column", gap:3 }}>
               {(tasksByProject[projId]||[]).map((t,i)=>{ const sel=tasks.includes(t); return (
-                <label key={i} style={{ display:"flex", alignItems:"center", gap:9, padding:"8px 11px", borderRadius:6, cursor:"pointer", background:sel?"#1a2f3f":"transparent", border:`1px solid ${sel?"#e07b39":"#1e2830"}` }}>
-                  <div style={{ width:15, height:15, borderRadius:3, flexShrink:0, border:`2px solid ${sel?"#e07b39":"#3a4a58"}`, background:sel?"#e07b39":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:9 }}>✓</span>}</div>
-                  <span style={{ fontSize:13, color:"#c0d0dc" }}>{t}</span>
+                <label key={i} style={{ display:"flex", alignItems:"center", gap:9, padding:"8px 11px", borderRadius:6, cursor:"pointer", background:sel?"rgba(25,118,210,0.2)":"transparent", border:`1px solid ${sel?"var(--orange)":"var(--border)"}` }}>
+                  <div style={{ width:15, height:15, borderRadius:3, flexShrink:0, border:`2px solid ${sel?"var(--orange)":"var(--text3)"}`, background:sel?"var(--orange)":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:9 }}>✓</span>}</div>
+                  <span style={{ fontSize:13, color:"var(--text)" }}>{t}</span>
                   <input type="checkbox" checked={sel} onChange={()=>tgTask(t)} style={{ display:"none" }} />
                 </label>
               ); })}
@@ -703,18 +717,18 @@ function AddScheduleScreen({ onScheduleAdded, projects, employees, tasksByProjec
 
       {/* Equipment */}
       <SectionCard step={5} label="Equipment (optional)" done={equipIds.length>0}>
-        {equipIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{equipmentList.filter(e=>equipIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEquip(e.id)} style={{ fontSize:11, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
+        {equipIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{equipmentList.filter(e=>equipIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEquip(e.id)} style={{ fontSize:11, color:"var(--orange)", background:"rgba(25,118,210,0.2)", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
         <CheckList items={equipmentList} selected={equipIds} onToggle={tgEquip} labelKey="name" subKey="id_num" />
       </SectionCard>
 
       {/* Notes */}
       <SectionCard step={6} label="Notes (optional)" done={notes.trim().length>0}>
-        <textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Site instructions, safety notes, delivery details…" rows={4} style={{ width:"100%", background:"#111820", border:`1px solid ${notes.trim()?"#e07b39":"#2a3a48"}`, borderRadius:8, padding:"11px 13px", color:"#d0dde8", fontSize:13, fontFamily:"'Barlow',sans-serif", resize:"vertical", lineHeight:1.6, outline:"none" }} />
-        <div style={{ fontSize:10, color:"#3a4a58", textAlign:"right", marginTop:4 }}>{notes.length} chars</div>
+        <textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Site instructions, safety notes, delivery details…" rows={4} style={{ width:"100%", background:"var(--bg3)", border:`1px solid ${notes.trim()?"var(--orange)":"var(--border2)"}`, borderRadius:8, padding:"11px 13px", color:"var(--text)", fontSize:13, fontFamily:"'Roboto',sans-serif", resize:"vertical", lineHeight:1.6, outline:"none" }} />
+        <div style={{ fontSize:10, color:"var(--text3)", textAlign:"right", marginTop:4 }}>{notes.length} chars</div>
       </SectionCard>
 
       {/* Submit */}
-      <button onClick={handleConfirm} disabled={!canSubmit} style={{ width:"100%", padding:"15px 0", borderRadius:10, background:canSubmit?"#e07b39":"#1e2830", border:"none", cursor:canSubmit?"pointer":"not-allowed", color:canSubmit?"#fff":"#3a4a58", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, letterSpacing:"0.1em", textTransform:"uppercase" }}>
+      <button onClick={handleConfirm} disabled={!canSubmit} style={{ width:"100%", padding:"15px 0", borderRadius:10, background:canSubmit?"var(--orange)":"var(--border)", border:"none", cursor:canSubmit?"pointer":"not-allowed", color:canSubmit?"#fff":"var(--text3)", fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:16, letterSpacing:"0.1em", textTransform:"uppercase" }}>
         {canSubmit?"Confirm & Send Schedule →":"Complete Required Fields"}
       </button>
     </div>
@@ -738,16 +752,16 @@ function DailyDetailScreen({ schedules }) {
     <div style={{ padding:"20px 14px 64px", maxWidth:700, margin:"0 auto" }}>
       {/* Date picker strip */}
       <div style={{ marginBottom:22 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:10 }}>Select Date</div>
+        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:10 }}>Select Date</div>
         <div style={{ display:"flex", gap:7, overflowX:"auto", paddingBottom:4 }}>
           {allDates.map(d => {
             const cnt=schedules.filter(s=>s.date===d).length, sel=d===selDate, tod=d===today;
             return (
-              <button key={d} onClick={()=>setSelDate(d)} style={{ flexShrink:0, background:sel?"#1a2f3f":"#0d1820", border:`1px solid ${sel?"#e07b39":"#1e2830"}`, borderRadius:10, padding:"9px 14px", cursor:"pointer", textAlign:"center", minWidth:90 }}>
-                {tod && <div style={{ fontSize:8, color:"#e07b39", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:2 }}>Today</div>}
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:14, color:sel?"#fff":"#8aa0b0" }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short"})}</div>
-                <div style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:sel?"#a0c0d0":"#3a5060", marginTop:1 }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>
-                <div style={{ fontSize:9, color:sel?"#e07b39":"#3a5060", fontFamily:"'IBM Plex Mono',monospace", marginTop:5 }}>{cnt} job{cnt!==1?"s":""}</div>
+              <button key={d} onClick={()=>setSelDate(d)} style={{ flexShrink:0, background:sel?"rgba(25,118,210,0.2)":"var(--bg2)", border:`1px solid ${sel?"var(--orange)":"var(--border)"}`, borderRadius:10, padding:"9px 14px", cursor:"pointer", textAlign:"center", minWidth:90 }}>
+                {tod && <div style={{ fontSize:8, color:"var(--orange)", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:2 }}>Today</div>}
+                <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:700, fontSize:14, color:sel?"#fff":"var(--text2)" }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short"})}</div>
+                <div style={{ fontFamily:"'Roboto Mono',monospace", fontSize:10, color:sel?"#a0c0d0":"var(--text3)", marginTop:1 }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>
+                <div style={{ fontSize:9, color:sel?"var(--orange)":"var(--text3)", fontFamily:"'Roboto Mono',monospace", marginTop:5 }}>{cnt} job{cnt!==1?"s":""}</div>
               </button>
             );
           })}
@@ -755,21 +769,21 @@ function DailyDetailScreen({ schedules }) {
       </div>
 
       {/* Summary bar */}
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20, padding:"12px 16px", background:"#0d1820", border:"1px solid #1e2830", borderRadius:10, flexWrap:"wrap" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20, padding:"12px 16px", background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:10, flexWrap:"wrap" }}>
         <div style={{ flex:1 }}>
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:17, color:"#fff" }}>{fmtDateLong(selDate)}</div>
+          <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:17, color:"#fff" }}>{fmtDateLong(selDate)}</div>
         </div>
         {[{v:daySchedules.length,l:"Jobs"},{v:totalCrew,l:"Crew"},{v:totalTasks,l:"Tasks"},{v:totalEquip,l:"Equip"}].map((s,i)=>(
           <div key={i} style={{ textAlign:"center", paddingLeft:14, borderLeft:"1px solid #1e2830" }}>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#e07b39" }}>{s.v}</div>
-            <div style={{ fontSize:9, color:"#5a7080", letterSpacing:"0.08em", textTransform:"uppercase" }}>{s.l}</div>
+            <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:20, color:"var(--orange)" }}>{s.v}</div>
+            <div style={{ fontSize:9, color:"var(--text3)", letterSpacing:"0.08em", textTransform:"uppercase" }}>{s.l}</div>
           </div>
         ))}
       </div>
 
       {/* Job cards */}
       {daySchedules.length===0
-        ? <div style={{ textAlign:"center", padding:"60px 20px", color:"#3a4a58", fontSize:13, fontStyle:"italic" }}>No jobs scheduled for this date.</div>
+        ? <div style={{ textAlign:"center", padding:"60px 20px", color:"var(--text3)", fontSize:13, fontStyle:"italic" }}>No jobs scheduled for this date.</div>
         : <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
             {daySchedules.map((s,i)=><DispatchCard key={s.id} schedule={s} index={i} />)}
           </div>
@@ -781,24 +795,24 @@ function DailyDetailScreen({ schedules }) {
 function DispatchCard({ schedule, index }) {
   const [open, setOpen] = useState(true);
   return (
-    <div style={{ background:"#0d1820", border:"1px solid #1e2830", borderRadius:12, overflow:"hidden", animation:`fadeUp 0.3s ease ${index*0.07}s both` }}>
+    <div style={{ background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:12, overflow:"hidden", animation:`fadeUp 0.3s ease ${index*0.07}s both` }}>
       <div onClick={()=>setOpen(o=>!o)} style={{ padding:"14px 18px", cursor:"pointer", display:"flex", alignItems:"center", gap:12, borderBottom:open?"1px solid #1a2830":"none" }}>
-        <div style={{ flexShrink:0, background:"#111820", border:"1px solid #2a3a48", borderRadius:8, padding:"5px 9px", textAlign:"center", minWidth:52 }}>
-          <div style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:12, color:"#e07b39", fontWeight:500 }}>{fmt12(schedule.startTime)}</div>
+        <div style={{ flexShrink:0, background:"var(--bg3)", border:"1px solid #2a3a48", borderRadius:8, padding:"5px 9px", textAlign:"center", minWidth:52 }}>
+          <div style={{ fontFamily:"'Roboto Mono',monospace", fontSize:12, color:"var(--orange)", fontWeight:500 }}>{fmt12(schedule.startTime)}</div>
         </div>
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:16, fontWeight:700, color:"#e0eaf0" }}>{schedule.project.name}</div>
-          <div style={{ fontSize:11, color:"#5a7080", marginTop:1 }}>📍 {schedule.project.location}</div>
+          <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontSize:16, fontWeight:700, color:"var(--text)" }}>{schedule.project.name}</div>
+          <div style={{ fontSize:11, color:"var(--text3)", marginTop:1 }}>📍 {schedule.project.location}</div>
         </div>
         <div style={{ display:"flex", gap:7, flexShrink:0 }}>
           {[{icon:"👷",val:schedule.crew.length},{icon:"✅",val:schedule.tasks.length}].map((b,i)=>(
-            <div key={i} style={{ display:"flex", alignItems:"center", gap:4, background:"#111820", border:"1px solid #2a3a48", borderRadius:6, padding:"3px 9px", fontSize:12, color:"#8aa0b0" }}>
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:4, background:"var(--bg3)", border:"1px solid #2a3a48", borderRadius:6, padding:"3px 9px", fontSize:12, color:"var(--text2)" }}>
               <span style={{ fontSize:12 }}>{b.icon}</span>
-              <span style={{ fontFamily:"'IBM Plex Mono',monospace" }}>{b.val}</span>
+              <span style={{ fontFamily:"'Roboto Mono',monospace" }}>{b.val}</span>
             </div>
           ))}
         </div>
-        <span style={{ color:"#3a4a58", fontSize:13, flexShrink:0, transform:open?"rotate(180deg)":"rotate(0)", transition:"transform 0.2s", display:"inline-block" }}>▼</span>
+        <span style={{ color:"var(--text3)", fontSize:13, flexShrink:0, transform:open?"rotate(180deg)":"rotate(0)", transition:"transform 0.2s", display:"inline-block" }}>▼</span>
       </div>
       {open && (
         <div style={{ padding:"16px 18px", display:"flex", flexDirection:"column", gap:16 }}>
@@ -808,10 +822,10 @@ function DispatchCard({ schedule, index }) {
                 const emp = EMPLOYEES.find(e=>e.name===name);
                 const role = emp?.role||"";
                 return (
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:6, background:"#111820", border:"1px solid #1e2830", borderRadius:7, padding:"5px 10px" }}>
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:6, background:"var(--bg3)", border:"1px solid #1e2830", borderRadius:7, padding:"5px 10px" }}>
                     <span style={{ width:7, height:7, borderRadius:"50%", background:ROLE_COLORS[role]||"#5a6a7a", flexShrink:0 }} />
-                    <span style={{ fontSize:12, color:"#c0d0dc", fontWeight:600 }}>{name}</span>
-                    {role && <span style={{ fontSize:10, color:"#4a6070" }}>{role}</span>}
+                    <span style={{ fontSize:12, color:"var(--text)", fontWeight:600 }}>{name}</span>
+                    {role && <span style={{ fontSize:10, color:"var(--text3)" }}>{role}</span>}
                   </div>
                 );
               })}
@@ -819,11 +833,11 @@ function DispatchCard({ schedule, index }) {
           </DSect>
           <DSect label={`Tasks — ${schedule.tasks.length}`}>
             <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-              {schedule.tasks.map((t,i)=><div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 10px", background:"#0a1520", borderRadius:5, fontSize:12, color:"#a0b8c8" }}><span style={{ color:"#e07b39", fontSize:8 }}>◆</span>{t}</div>)}
+              {schedule.tasks.map((t,i)=><div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 10px", background:"var(--bg2)", borderRadius:5, fontSize:12, color:"var(--text2)" }}><span style={{ color:"var(--orange)", fontSize:8 }}>◆</span>{t}</div>)}
             </div>
           </DSect>
-          {schedule.equipment.length>0 && <DSect label={`Equipment — ${schedule.equipment.length}`}><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{schedule.equipment.map((e,i)=><span key={i} style={{ fontSize:11, color:"#7a9aaa", background:"#0a1520", border:"1px solid #1a2a38", borderRadius:5, padding:"4px 9px", fontFamily:"'IBM Plex Mono',monospace" }}>{e}</span>)}</div></DSect>}
-          {schedule.notes && <div style={{ padding:"9px 13px", background:"#0a1820", border:"1px solid #1e3040", borderRadius:7, fontSize:12, color:"#7a9aaa", lineHeight:1.6, display:"flex", gap:8 }}><span style={{ color:"#e07b39", flexShrink:0 }}>📝</span>{schedule.notes}</div>}
+          {schedule.equipment.length>0 && <DSect label={`Equipment — ${schedule.equipment.length}`}><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{schedule.equipment.map((e,i)=><span key={i} style={{ fontSize:11, color:"var(--text2)", background:"var(--bg2)", border:"1px solid #1a2a38", borderRadius:5, padding:"4px 9px", fontFamily:"'Roboto Mono',monospace" }}>{e}</span>)}</div></DSect>}
+          {schedule.notes && <div style={{ padding:"9px 13px", background:"var(--bg2)", border:"1px solid #1e3040", borderRadius:7, fontSize:12, color:"var(--text2)", lineHeight:1.6, display:"flex", gap:8 }}><span style={{ color:"var(--orange)", flexShrink:0 }}>📝</span>{schedule.notes}</div>}
         </div>
       )}
     </div>
@@ -831,7 +845,7 @@ function DispatchCard({ schedule, index }) {
 }
 
 function DSect({ label, children }) {
-  return <div><div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:8 }}>{label}</div>{children}</div>;
+  return <div><div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:8 }}>{label}</div>{children}</div>;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -866,8 +880,8 @@ function AdminScreen({ projects, employees, equipmentList, tasksByProject,
   ];
 
   const inputSt = (val) => ({
-    width:"100%", background:"#111820", border:`1px solid ${val?"#e07b39":"#2a3a48"}`,
-    borderRadius:7, padding:"9px 12px", color:"#d0dde8", fontSize:13,
+    width:"100%", background:"var(--bg3)", border:`1px solid ${val?"var(--orange)":"var(--border2)"}`,
+    borderRadius:7, padding:"9px 12px", color:"var(--text)", fontSize:13,
     fontFamily:"inherit", outline:"none",
   });
 
@@ -879,9 +893,9 @@ function AdminScreen({ projects, employees, equipmentList, tasksByProject,
         {TABS.map(t => (
           <button key={t.key} onClick={()=>setTab(t.key)} style={{
             flex:1, padding:"10px 4px", borderRadius:9, cursor:"pointer",
-            background:tab===t.key?"#1a2f3f":"#0d1820",
-            border:`1px solid ${tab===t.key?"#e07b39":"#1e2830"}`,
-            color:tab===t.key?"#e07b39":"#5a7080",
+            background:tab===t.key?"rgba(25,118,210,0.2)":"var(--bg2)",
+            border:`1px solid ${tab===t.key?"var(--orange)":"var(--border)"}`,
+            color:tab===t.key?"var(--orange)":"var(--text3)",
             fontFamily:"inherit", fontSize:11, fontWeight:tab===t.key?700:400,
             display:"flex", flexDirection:"column", alignItems:"center", gap:4,
           }}>
@@ -905,8 +919,8 @@ function AdminScreen({ projects, employees, equipmentList, tasksByProject,
             {projects.map(p => (
               <AdminRow key={p.id} onRemove={()=>onRemoveProject(p.id)}>
                 <div>
-                  <div style={{ fontSize:13, color:"#d0dde8", fontWeight:600 }}>{p.name}</div>
-                  <div style={{ fontSize:11, color:"#5a7080" }}>📍 {p.location}</div>
+                  <div style={{ fontSize:13, color:"var(--text)", fontWeight:600 }}>{p.name}</div>
+                  <div style={{ fontSize:11, color:"var(--text3)" }}>📍 {p.location}</div>
                 </div>
               </AdminRow>
             ))}
@@ -937,8 +951,8 @@ function AdminScreen({ projects, employees, equipmentList, tasksByProject,
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                   <span style={{ width:8, height:8, borderRadius:"50%", background:ROLE_COLORS[e.role]||"#5a6a7a", flexShrink:0 }} />
                   <div>
-                    <div style={{ fontSize:13, color:"#d0dde8", fontWeight:600 }}>{e.name}</div>
-                    <div style={{ fontSize:11, color:"#5a7080" }}>{e.role} · {e.email}</div>
+                    <div style={{ fontSize:13, color:"var(--text)", fontWeight:600 }}>{e.name}</div>
+                    <div style={{ fontSize:11, color:"var(--text3)" }}>{e.role} · {e.email}</div>
                   </div>
                 </div>
               </AdminRow>
@@ -961,8 +975,8 @@ function AdminScreen({ projects, employees, equipmentList, tasksByProject,
             {equipmentList.map(e => (
               <AdminRow key={e.id} onRemove={()=>onRemoveEquipment(e.id)}>
                 <div>
-                  <div style={{ fontSize:13, color:"#d0dde8", fontWeight:600 }}>{e.name}</div>
-                  <div style={{ fontSize:11, color:"#5a7080", fontFamily:"'IBM Plex Mono',monospace" }}>{e.id_num}</div>
+                  <div style={{ fontSize:13, color:"var(--text)", fontWeight:600 }}>{e.name}</div>
+                  <div style={{ fontSize:11, color:"var(--text3)", fontFamily:"'Roboto Mono',monospace" }}>{e.id_num}</div>
                 </div>
               </AdminRow>
             ))}
@@ -993,8 +1007,8 @@ function AdminScreen({ projects, employees, equipmentList, tasksByProject,
                 {pts.map((t,i) => (
                   <AdminRow key={i} onRemove={()=>onRemoveTask(p.id,t)}>
                     <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ color:"#e07b39", fontSize:8 }}>◆</span>
-                      <span style={{ fontSize:12, color:"#c0d0dc" }}>{t}</span>
+                      <span style={{ color:"var(--orange)", fontSize:8 }}>◆</span>
+                      <span style={{ fontSize:12, color:"var(--text)" }}>{t}</span>
                     </div>
                   </AdminRow>
                 ))}
@@ -1008,11 +1022,11 @@ function AdminScreen({ projects, employees, equipmentList, tasksByProject,
 }
 
 // Admin helper micro-components
-const labelSt = { fontSize:10, color:"#5a7080", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 };
+const labelSt = { fontSize:10, color:"var(--text3)", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 };
 function AdminCard({ title, children }) {
   return (
-    <div style={{ background:"#0d1820", border:"1px solid #1e2830", borderRadius:12, padding:20, animation:"fadeUp 0.3s ease" }}>
-      <div style={{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:"#8aa0b0", textTransform:"uppercase", marginBottom:14 }}>{title}</div>
+    <div style={{ background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:12, padding:20, animation:"fadeUp 0.3s ease" }}>
+      <div style={{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:"var(--text2)", textTransform:"uppercase", marginBottom:14 }}>{title}</div>
       {children}
     </div>
   );
@@ -1024,18 +1038,18 @@ function AdminRow({ children, onRemove }) {
       <div style={{ flex:1 }}>{children}</div>
       {confirm ? (
         <div style={{ display:"flex", gap:6, flexShrink:0 }}>
-          <button onClick={()=>setConfirm(false)} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:5, color:"#8aa0b0", fontSize:11, padding:"4px 8px", cursor:"pointer", fontFamily:"inherit" }}>Cancel</button>
+          <button onClick={()=>setConfirm(false)} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:5, color:"var(--text2)", fontSize:11, padding:"4px 8px", cursor:"pointer", fontFamily:"inherit" }}>Cancel</button>
           <button onClick={onRemove} style={{ background:"#3a1010", border:"1px solid #8a3030", borderRadius:5, color:"#e07070", fontSize:11, padding:"4px 8px", cursor:"pointer", fontFamily:"inherit" }}>Confirm</button>
         </div>
       ) : (
-        <button onClick={()=>setConfirm(true)} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:5, color:"#5a7080", fontSize:11, padding:"4px 9px", cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>Remove</button>
+        <button onClick={()=>setConfirm(true)} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:5, color:"var(--text3)", fontSize:11, padding:"4px 9px", cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>Remove</button>
       )}
     </div>
   );
 }
 function AddBtn({ children, onClick, disabled }) {
   return (
-    <button onClick={onClick} disabled={disabled} style={{ width:"100%", padding:"10px 0", borderRadius:8, background:disabled?"#1e2830":"#e07b39", border:"none", color:disabled?"#3a4a58":"#fff", fontSize:13, fontWeight:700, cursor:disabled?"not-allowed":"pointer", fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase", marginTop:4 }}>{children}</button>
+    <button onClick={onClick} disabled={disabled} style={{ width:"100%", padding:"10px 0", borderRadius:8, background:disabled?"var(--border)":"var(--orange)", border:"none", color:disabled?"var(--text3)":"#fff", fontSize:13, fontWeight:700, cursor:disabled?"not-allowed":"pointer", fontFamily:"'Roboto Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase", marginTop:4 }}>{children}</button>
   );
 }
 
@@ -1079,50 +1093,71 @@ export default function PrimedApp() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Barlow:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Condensed:wght@600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
+        :root {
+          --bg:       #0a1628;
+          --bg2:      #0d1e35;
+          --bg3:      #112240;
+          --border:   #1a3a5c;
+          --border2:  #1e4a7a;
+          --blue:     #1976d2;
+          --blue-lt:  #2196f3;
+          --blue-nav: #0d47a1;
+          --orange:   #f57c00;
+          --orange-lt:#ff9800;
+          --text:     #e8f0fe;
+          --text2:    #90aec8;
+          --text3:    #5a7a9a;
+          --success:  #2e9e60;
+        }
         * { box-sizing:border-box; margin:0; padding:0; }
-        body { background:#080f16; }
+        body { background:var(--bg); font-family:'Roboto',sans-serif; }
         ::-webkit-scrollbar { width:4px; height:4px; }
-        ::-webkit-scrollbar-track { background:#0d1820; }
-        ::-webkit-scrollbar-thumb { background:#2a3a48; border-radius:2px; }
+        ::-webkit-scrollbar-track { background:var(--bg2); }
+        ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes slideInLeft { from{transform:translateX(-12px);opacity:0} to{transform:translateX(0);opacity:1} }
-        .job-pill:hover { filter:brightness(1.15); transform:translateY(-1px); }
-        .job-pill { transition:filter 0.15s, transform 0.15s; }
-        .nav-btn:hover { background:#1a2830 !important; }
+        .job-pill:hover { filter:brightness(1.1); transform:translateY(-1px); }
+        .job-pill { transition:filter 0.15s, transform 0.15s; cursor:pointer; }
+        .nav-btn:hover { background:var(--bg3) !important; }
         input[type="date"]::-webkit-calendar-picker-indicator,
-        input[type="time"]::-webkit-calendar-picker-indicator { filter:invert(0.5); cursor:pointer; }
-        textarea, input, select { outline:none; }
-        select option { background:#0d1820; }
+        input[type="time"]::-webkit-calendar-picker-indicator { filter:invert(0.6) sepia(1) saturate(2) hue-rotate(190deg); cursor:pointer; }
+        textarea, input, select { outline:none; font-family:'Roboto',sans-serif; }
+        select option { background:var(--bg2); }
+        .btn-primary { background:var(--blue); border:none; border-radius:8px; color:#fff; font-family:'Roboto',sans-serif; font-weight:600; cursor:pointer; transition:background 0.15s; }
+        .btn-primary:hover { background:var(--blue-lt); }
+        .btn-primary:disabled { background:var(--bg3); color:var(--text3); cursor:not-allowed; }
       `}</style>
 
-      <div style={{ minHeight:"100vh", background:"#080f16", fontFamily:"'Barlow',sans-serif" }}>
+      <div style={{ minHeight:"100vh", background:"var(--bg)", fontFamily:"'Roboto',sans-serif" }}>
         {/* ── Global Top Nav ── */}
-        <div style={{ position:"sticky", top:0, zIndex:100, background:"#080f16", borderBottom:"1px solid #1a2830", padding:"12px 16px", display:"flex", alignItems:"center", gap:14 }}>
+        <div style={{ position:"sticky", top:0, zIndex:100, background:"#0d47a1", borderBottom:"none", padding:"10px 16px", display:"flex", alignItems:"center", gap:14, boxShadow:"0 2px 8px rgba(0,0,0,0.4)" }}>
           <HamburgerMenu onNavigate={navigate} currentScreen={screen} />
-          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <div style={{ width:36, height:36, borderRadius:9, background:"#0d1820", border:"1px solid #2a3a48", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg width="28" height="28" viewBox="0 0 34 34" fill="none">
+          <div style={{ display:"flex", alignItems:"center", gap:12, flex:1 }}>
+            <div style={{ width:34, height:34, borderRadius:8, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg width="26" height="26" viewBox="0 0 34 34" fill="none">
                 <style>{`@keyframes primed-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.pa{transform-origin:17px 17px;animation:primed-spin 1.4s linear infinite}`}</style>
                 <g className="pa">
-                  <circle cx="17" cy="17" r="15" stroke="#2a3a48" strokeWidth="2" fill="none"/>
-                  <path d="M17 2 A15 15 0 0 1 32 17" stroke="#e07b39" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
+                  <circle cx="17" cy="17" r="15" stroke="rgba(255,255,255,0.3)" strokeWidth="2" fill="none"/>
+                  <path d="M17 2 A15 15 0 0 1 32 17" stroke="#ff9800" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
                 </g>
-                <path d="M9 20 Q9 13 17 12 Q25 13 25 20 Z" fill="#e07b39"/>
-                <rect x="7" y="19.5" width="20" height="2.5" rx="1.2" fill="#c86a28"/>
-                <path d="M17 12 L17 19.5" stroke="#c86a28" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M9 20 Q9 13 17 12 Q25 13 25 20 Z" fill="#fff"/>
+                <rect x="7" y="19.5" width="20" height="2.5" rx="1.2" fill="rgba(255,255,255,0.7)"/>
+                <path d="M17 12 L17 19.5" stroke="rgba(255,255,255,0.5)" strokeWidth="1.2" strokeLinecap="round"/>
               </svg>
             </div>
             <div>
               <div style={{ display:"flex", alignItems:"baseline", gap:8 }}>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#fff", letterSpacing:"0.06em" }}>PRIMED</span>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:600, fontSize:15, color:"#5a7080", letterSpacing:"0.04em" }}>{PAGE_TITLES[screen]}</span>
+                <span style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#fff", letterSpacing:"0.04em" }}>PRIMED</span>
+                <span style={{ fontFamily:"'Roboto',sans-serif", fontWeight:500, fontSize:14, color:"rgba(255,255,255,0.7)" }}>{PAGE_TITLES[screen]}</span>
               </div>
-              <div style={{ fontSize:9, color:"#3a5060", fontFamily:"'IBM Plex Mono',monospace", letterSpacing:"0.1em" }}>{PAGE_SUBS[screen]}</div>
+              <div style={{ fontSize:9, color:"rgba(255,255,255,0.5)", fontFamily:"'Roboto Mono',monospace", letterSpacing:"0.1em" }}>{PAGE_SUBS[screen]}</div>
             </div>
           </div>
+          {/* User avatar */}
+          <div style={{ width:34, height:34, borderRadius:"50%", background:"#7b1fa2", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", flexShrink:0 }}>JS</div>
         </div>
 
         {/* ── Screen Content ── */}
