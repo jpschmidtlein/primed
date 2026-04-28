@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 // ═══════════════════════════════════════════════════════════════
 //  SHARED DATA
 // ═══════════════════════════════════════════════════════════════
-const PROJECTS = [
+const DEFAULT_PROJECTS = [
   { id: 1, name: "US-89 Bridge Replacement",    location: "Flagstaff, AZ" },
   { id: 2, name: "Riverside Culvert Extension", location: "Tempe, AZ" },
   { id: 3, name: "Downtown Utility Relocation", location: "Phoenix, AZ" },
@@ -11,7 +11,7 @@ const PROJECTS = [
   { id: 5, name: "Mesa Stormwater Basin",        location: "Mesa, AZ" },
 ];
 
-const EMPLOYEES = [
+const DEFAULT_EMPLOYEES = [
   { id: 1,  name: "Ray Holbrook",   role: "Foreman",            email: "r.holbrook@company.com",  phone: "602-555-0101" },
   { id: 2,  name: "Delia Campos",   role: "Equipment Operator", email: "d.campos@company.com",    phone: "602-555-0102" },
   { id: 3,  name: "Marcus Trent",   role: "Laborer",            email: "m.trent@company.com",     phone: "602-555-0103" },
@@ -24,7 +24,7 @@ const EMPLOYEES = [
   { id: 10, name: "Sierra Fox",     role: "Traffic Control",    email: "s.fox@company.com",       phone: "602-555-0110" },
 ];
 
-const TASKS_BY_PROJECT = {
+const DEFAULT_TASKS_BY_PROJECT = {
   1: ["Form Setting – Abutment A","Rebar Placement – Deck","Concrete Pour – Pier 2","Form Stripping","Grout Injection","Survey Control Points","Erosion Control Inspection"],
   2: ["Excavation – Sta. 12+40","Pipe Bedding Prep","RCP Install 60\"","Backfill & Compact","Headwall Forming","Concrete Pour – Headwall","Site Restoration"],
   3: ["Potholing – Zone 4","Demo – Existing Manhole","Duct Bank Trenching","Conduit Install","Backfill – 6\" Lifts","Pavement Patching","Traffic Control Setup"],
@@ -32,19 +32,19 @@ const TASKS_BY_PROJECT = {
   5: ["Dewatering Setup","Mass Excavation – Cell B","Slope Shaping","Rip Rap Placement","Outlet Structure Form","Concrete Pour – Inlet","Hydroseed Prep"],
 };
 
-const EQUIPMENT_LIST = [
-  { id: 1,  name: "CAT 336 Excavator",              id_num: "EX-336-01" },
-  { id: 2,  name: "CAT D6T Dozer",                  id_num: "DZ-D6T-02" },
-  { id: 3,  name: "Komatsu GD655 Motor Grader",     id_num: "GR-655-01" },
-  { id: 4,  name: "Volvo A40G Articulated Truck",   id_num: "HT-A40-01" },
-  { id: 5,  name: "Volvo A40G Articulated Truck",   id_num: "HT-A40-02" },
-  { id: 6,  name: "CAT 950M Wheel Loader",          id_num: "WL-950-01" },
-  { id: 7,  name: "Hamm HD+ 120 Roller",            id_num: "CP-120-01" },
-  { id: 8,  name: "Manitowoc MLC165 Crane",         id_num: "CR-165-01" },
+const DEFAULT_EQUIPMENT_LIST = [
+  { id: 1,  name: "CAT 336 Excavator",                 id_num: "EX-336-01" },
+  { id: 2,  name: "CAT D6T Dozer",                     id_num: "DZ-D6T-02" },
+  { id: 3,  name: "Komatsu GD655 Motor Grader",        id_num: "GR-655-01" },
+  { id: 4,  name: "Volvo A40G Articulated Truck",      id_num: "HT-A40-01" },
+  { id: 5,  name: "Volvo A40G Articulated Truck",      id_num: "HT-A40-02" },
+  { id: 6,  name: "CAT 950M Wheel Loader",             id_num: "WL-950-01" },
+  { id: 7,  name: "Hamm HD+ 120 Roller",               id_num: "CP-120-01" },
+  { id: 8,  name: "Manitowoc MLC165 Crane",            id_num: "CR-165-01" },
   { id: 9,  name: "Ingersoll Rand 750 Air Compressor", id_num: "AC-750-01" },
-  { id: 10, name: "Godwin CD150M Pump",             id_num: "DW-150-01" },
-  { id: 11, name: "Freightliner 114SD Flatbed",     id_num: "TR-114-01" },
-  { id: 12, name: "Trimble S7 Total Station",       id_num: "SV-S7-01" },
+  { id: 10, name: "Godwin CD150M Pump",                id_num: "DW-150-01" },
+  { id: 11, name: "Freightliner 114SD Flatbed",        id_num: "TR-114-01" },
+  { id: 12, name: "Trimble S7 Total Station",          id_num: "SV-S7-01" },
 ];
 
 const PROJECT_COLORS = {
@@ -104,9 +104,10 @@ function PrimedLogo() {
 function HamburgerMenu({ onNavigate, currentScreen }) {
   const [open, setOpen] = useState(false);
   const items = [
-    { key:"calendar", label:"Week Calendar", icon:"📅" },
+    { key:"calendar",  label:"Week Calendar", icon:"📅" },
     { key:"scheduler", label:"Add Schedule",  icon:"➕" },
     { key:"dispatch",  label:"Daily Detail",  icon:"📋" },
+    { key:"admin",     label:"Admin",         icon:"⚙️" },
   ];
   return (
     <div style={{ position:"relative", zIndex:200 }}>
@@ -237,7 +238,7 @@ function MiniChecklist({ items, selected, onToggle }) {
   );
 }
 
-function EditDrawer({ schedule, onClose, onSave }) {
+function EditDrawer({ schedule, onClose, onSave, employees, equipmentList, tasksByProject, projects }) {
   const c = PROJECT_COLORS[schedule.project.name] || { border:"#2a3a48", dot:"#5a7080", text:"#8aa0b0" };
   const [mode, setMode] = useState("view");
   const [tab, setTab] = useState("datetime");
@@ -250,9 +251,9 @@ function EditDrawer({ schedule, onClose, onSave }) {
   const tgCrew  = n => setECrew(p  => p.includes(n)?p.filter(x=>x!==n):[...p,n]);
   const tgTask  = t => setETasks(p => p.includes(t)?p.filter(x=>x!==t):[...p,t]);
   const tgEquip = e => setEEquip(p => p.includes(e)?p.filter(x=>x!==e):[...p,e]);
-  const allEquipNames = EQUIPMENT_LIST.map(e=>e.name);
-  const allCrewNames  = EMPLOYEES.map(e=>e.name);
-  const projTasks = TASKS_BY_PROJECT[PROJECTS.find(p=>p.name===schedule.project.name)?.id] || [];
+  const allEquipNames = equipmentList.map(e=>e.name);
+  const allCrewNames  = employees.map(e=>e.name);
+  const projTasks = tasksByProject[projects.find(p=>p.name===schedule.project.name)?.id] || [];
   const hasChanges = eDate!==schedule.date||eTime!==schedule.startTime||JSON.stringify([...eCrew].sort())!==JSON.stringify([...schedule.crew].sort())||JSON.stringify([...eTasks].sort())!==JSON.stringify([...schedule.tasks].sort())||JSON.stringify([...eEquip].sort())!==JSON.stringify([...schedule.equipment].sort())||eNotes!==(schedule.notes||"");
   const doSave = () => { onSave(schedule.id,eDate,eTime,eCrew,eTasks,eEquip,eNotes); setMode("notify"); };
   const doCancel = () => { setEDate(schedule.date);setETime(schedule.startTime);setECrew([...schedule.crew]);setETasks([...schedule.tasks]);setEEquip([...schedule.equipment]);setENotes(schedule.notes||"");setMode("view"); };
@@ -499,7 +500,7 @@ function LandscapeCalendar({ weekDates, schedules, today, onJobClick, weekProjec
   );
 }
 
-function WeekCalendarScreen({ schedules, onSave }) {
+function WeekCalendarScreen({ schedules, onSave, employees, equipmentList, tasksByProject, projects }) {
   const today = todayStr();
   const [anchor, setAnchor] = useState(today);
   const [focus,  setFocus]  = useState(today);
@@ -531,7 +532,7 @@ function WeekCalendarScreen({ schedules, onSave }) {
           }
         </div>
       </div>
-      {sel && <EditDrawer schedule={sel} onClose={()=>setSel(null)} onSave={(id,...args)=>{ onSave(id,...args); setSel(null); }} />}
+      {sel && <EditDrawer schedule={sel} onClose={()=>setSel(null)} onSave={(id,...args)=>{ onSave(id,...args); setSel(null); }} employees={employees} equipmentList={equipmentList} tasksByProject={tasksByProject} projects={projects} />}
     </div>
   );
 }
@@ -571,7 +572,7 @@ function SectionCard({ step, label, done, children }) {
   );
 }
 
-function AddScheduleScreen({ onScheduleAdded }) {
+function AddScheduleScreen({ onScheduleAdded, projects, employees, tasksByProject, equipmentList, schedules }) {
   const today = todayStr();
   const [date, setDate]=useState("");
   const [time, setTime]=useState("");
@@ -586,9 +587,15 @@ function AddScheduleScreen({ onScheduleAdded }) {
   const tgEmp  = id => setEmpIds(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
   const tgTask = t  => setTasks(p=>p.includes(t)?p.filter(x=>x!==t):[...p,t]);
   const tgEquip= id => setEquipIds(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
-  const selProj = PROJECTS.find(p=>p.id===projId);
+  const selProj = projects.find(p=>p.id===projId);
+
+  // crew already assigned on this date (excluding current schedule being edited)
+  const assignedOnDate = date
+    ? new Set(schedules.filter(s=>s.date===date).flatMap(s=>s.crew))
+    : new Set();
+
   const canSubmit = date&&projId&&empIds.length>0&&tasks.length>0;
-  const selCrewNames = EMPLOYEES.filter(e=>empIds.includes(e.id)).map(e=>e.name);
+  const selCrewNames = employees.filter(e=>empIds.includes(e.id)).map(e=>e.name);
 
   const handleConfirm = () => {
     const newSched = {
@@ -597,7 +604,7 @@ function AddScheduleScreen({ onScheduleAdded }) {
       project: { name:selProj.name, location:selProj.location },
       crew: selCrewNames,
       tasks,
-      equipment: EQUIPMENT_LIST.filter(e=>equipIds.includes(e.id)).map(e=>e.name),
+      equipment: equipmentList.filter(e=>equipIds.includes(e.id)).map(e=>e.name),
       notes,
     };
     onScheduleAdded(newSched);
@@ -645,7 +652,7 @@ function AddScheduleScreen({ onScheduleAdded }) {
       {/* Project */}
       <SectionCard step={2} label="Select Project" done={!!projId}>
         <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-          {PROJECTS.map(p=>(
+          {projects.map(p=>(
             <button key={p.id} onClick={()=>{ setProjId(p.id); setTasks([]); }} style={{ display:"flex", alignItems:"center", gap:12, background:projId===p.id?"#1a2f3f":"transparent", border:`1px solid ${projId===p.id?"#e07b39":"#1e2830"}`, borderRadius:8, padding:"10px 14px", cursor:"pointer", textAlign:"left" }}>
               <span style={{ flex:1, fontSize:13, fontWeight:600, color:"#d0dde8", fontFamily:"inherit" }}>{p.name}</span>
               <span style={{ fontSize:11, color:"#5a7080" }}>{p.location}</span>
@@ -657,8 +664,22 @@ function AddScheduleScreen({ onScheduleAdded }) {
 
       {/* Crew */}
       <SectionCard step={3} label="Assign Crew" done={empIds.length>0}>
-        {empIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{EMPLOYEES.filter(e=>empIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEmp(e.id)} style={{ fontSize:12, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 9px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
-        <CheckList items={EMPLOYEES} selected={empIds} onToggle={tgEmp} labelKey="name" subKey="role" />
+        {empIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{employees.filter(e=>empIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEmp(e.id)} style={{ fontSize:12, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 9px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
+        <div style={{ maxHeight:220, overflowY:"auto", display:"flex", flexDirection:"column", gap:3 }}>
+          {employees.map(e => {
+            const sel = empIds.includes(e.id);
+            const booked = !sel && assignedOnDate.has(e.name);
+            return (
+              <label key={e.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 12px", borderRadius:7, cursor:booked?"not-allowed":"pointer", background:sel?"#1a2f3f":booked?"#0a1018":"transparent", border:`1px solid ${sel?"#e07b39":booked?"#1a2830":"#1e2830"}`, opacity:booked?0.5:1 }}>
+                <div style={{ width:16, height:16, borderRadius:4, flexShrink:0, border:`2px solid ${sel?"#e07b39":"#3a4a58"}`, background:sel?"#e07b39":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:10 }}>✓</span>}</div>
+                <span style={{ flex:1, fontSize:13, color:booked?"#3a5060":"#c0d0dc" }}>{e.name}</span>
+                <span style={{ fontSize:11, color:"#5a7080" }}>{e.role}</span>
+                {booked && <span style={{ fontSize:9, color:"#c07040", background:"#2a1808", border:"1px solid #4a2810", borderRadius:4, padding:"2px 6px", letterSpacing:"0.06em" }}>ASSIGNED</span>}
+                <input type="checkbox" checked={sel} onChange={()=>!booked&&tgEmp(e.id)} style={{ display:"none" }} />
+              </label>
+            );
+          })}
+        </div>
       </SectionCard>
 
       {/* Tasks */}
@@ -668,7 +689,7 @@ function AddScheduleScreen({ onScheduleAdded }) {
             {tasks.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{tasks.map((t,i)=><span key={i} onClick={()=>tgTask(t)} style={{ fontSize:11, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{t} ×</span>)}</div>}
             <div style={{ fontSize:10, color:"#5a7080", marginBottom:7 }}>From estimate: <span style={{ color:"#8aa0b0" }}>{selProj?.name}</span></div>
             <div style={{ maxHeight:200, overflowY:"auto", display:"flex", flexDirection:"column", gap:3 }}>
-              {(TASKS_BY_PROJECT[projId]||[]).map((t,i)=>{ const sel=tasks.includes(t); return (
+              {(tasksByProject[projId]||[]).map((t,i)=>{ const sel=tasks.includes(t); return (
                 <label key={i} style={{ display:"flex", alignItems:"center", gap:9, padding:"8px 11px", borderRadius:6, cursor:"pointer", background:sel?"#1a2f3f":"transparent", border:`1px solid ${sel?"#e07b39":"#1e2830"}` }}>
                   <div style={{ width:15, height:15, borderRadius:3, flexShrink:0, border:`2px solid ${sel?"#e07b39":"#3a4a58"}`, background:sel?"#e07b39":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>{sel&&<span style={{ color:"#fff", fontSize:9 }}>✓</span>}</div>
                   <span style={{ fontSize:13, color:"#c0d0dc" }}>{t}</span>
@@ -682,8 +703,8 @@ function AddScheduleScreen({ onScheduleAdded }) {
 
       {/* Equipment */}
       <SectionCard step={5} label="Equipment (optional)" done={equipIds.length>0}>
-        {equipIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{EQUIPMENT_LIST.filter(e=>equipIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEquip(e.id)} style={{ fontSize:11, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
-        <CheckList items={EQUIPMENT_LIST} selected={equipIds} onToggle={tgEquip} labelKey="name" subKey="id_num" />
+        {equipIds.length>0 && <div style={{ display:"flex", flexWrap:"wrap", marginBottom:10 }}>{equipmentList.filter(e=>equipIds.includes(e.id)).map(e=><span key={e.id} onClick={()=>tgEquip(e.id)} style={{ fontSize:11, color:"#e07b39", background:"#1a2f3f", border:"1px solid #e07b39", borderRadius:5, padding:"3px 8px", cursor:"pointer", marginRight:5, marginBottom:5, display:"inline-flex", alignItems:"center", gap:5 }}>{e.name} ×</span>)}</div>}
+        <CheckList items={equipmentList} selected={equipIds} onToggle={tgEquip} labelKey="name" subKey="id_num" />
       </SectionCard>
 
       {/* Notes */}
@@ -814,29 +835,246 @@ function DSect({ label, children }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  ADMIN SCREEN
+// ═══════════════════════════════════════════════════════════════
+const ROLES = ["Foreman","Superintendent","Equipment Operator","Surveyor","Pipe Layer","Laborer","Traffic Control"];
+
+function AdminScreen({ projects, employees, equipmentList, tasksByProject,
+  onAddProject, onRemoveProject,
+  onAddEmployee, onRemoveEmployee,
+  onAddEquipment, onRemoveEquipment,
+  onAddTask, onRemoveTask,
+}) {
+  const [tab, setTab] = useState("projects");
+
+  // Project form
+  const [pName, setPName] = useState(""); const [pLoc, setPLoc] = useState("");
+  // Employee form
+  const [eName, setEName] = useState(""); const [eRole, setERole] = useState("Laborer");
+  const [eEmail, setEEmail] = useState(""); const [ePhone, setEPhone] = useState("");
+  // Equipment form
+  const [eqName, setEqName] = useState(""); const [eqNum, setEqNum] = useState("");
+  // Task form — needs project selection
+  const [taskProj, setTaskProj] = useState(projects[0]?.id || 1);
+  const [taskName, setTaskName] = useState("");
+
+  const TABS = [
+    { key:"projects",   icon:"📋", label:"Projects"  },
+    { key:"crew",       icon:"👷", label:"Crew"       },
+    { key:"equipment",  icon:"🚜", label:"Equipment"  },
+    { key:"tasks",      icon:"✅", label:"Tasks"      },
+  ];
+
+  const inputSt = (val) => ({
+    width:"100%", background:"#111820", border:`1px solid ${val?"#e07b39":"#2a3a48"}`,
+    borderRadius:7, padding:"9px 12px", color:"#d0dde8", fontSize:13,
+    fontFamily:"inherit", outline:"none",
+  });
+
+  return (
+    <div style={{ padding:"20px 14px 64px", maxWidth:640, margin:"0 auto" }}>
+
+      {/* Tab bar */}
+      <div style={{ display:"flex", gap:6, marginBottom:24 }}>
+        {TABS.map(t => (
+          <button key={t.key} onClick={()=>setTab(t.key)} style={{
+            flex:1, padding:"10px 4px", borderRadius:9, cursor:"pointer",
+            background:tab===t.key?"#1a2f3f":"#0d1820",
+            border:`1px solid ${tab===t.key?"#e07b39":"#1e2830"}`,
+            color:tab===t.key?"#e07b39":"#5a7080",
+            fontFamily:"inherit", fontSize:11, fontWeight:tab===t.key?700:400,
+            display:"flex", flexDirection:"column", alignItems:"center", gap:4,
+          }}>
+            <span style={{ fontSize:18 }}>{t.icon}</span>
+            <span style={{ letterSpacing:"0.06em", textTransform:"uppercase" }}>{t.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ── PROJECTS ── */}
+      {tab==="projects" && (
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          <AdminCard title="Add Project">
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              <div><div style={labelSt}>Project Name</div><input value={pName} onChange={e=>setPName(e.target.value)} placeholder="e.g. I-17 Interchange Rebuild" style={inputSt(pName)} /></div>
+              <div><div style={labelSt}>Location</div><input value={pLoc} onChange={e=>setPLoc(e.target.value)} placeholder="e.g. Phoenix, AZ" style={inputSt(pLoc)} /></div>
+              <AddBtn disabled={!pName.trim()||!pLoc.trim()} onClick={()=>{ onAddProject(pName.trim(),pLoc.trim()); setPName(""); setPLoc(""); }}>Add Project</AddBtn>
+            </div>
+          </AdminCard>
+          <AdminCard title={`Active Projects — ${projects.length}`}>
+            {projects.map(p => (
+              <AdminRow key={p.id} onRemove={()=>onRemoveProject(p.id)}>
+                <div>
+                  <div style={{ fontSize:13, color:"#d0dde8", fontWeight:600 }}>{p.name}</div>
+                  <div style={{ fontSize:11, color:"#5a7080" }}>📍 {p.location}</div>
+                </div>
+              </AdminRow>
+            ))}
+          </AdminCard>
+        </div>
+      )}
+
+      {/* ── CREW ── */}
+      {tab==="crew" && (
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          <AdminCard title="Add Crew Member">
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              <div><div style={labelSt}>Full Name</div><input value={eName} onChange={e=>setEName(e.target.value)} placeholder="e.g. John Smith" style={inputSt(eName)} /></div>
+              <div>
+                <div style={labelSt}>Role</div>
+                <select value={eRole} onChange={e=>setERole(e.target.value)} style={{ ...inputSt(true), cursor:"pointer" }}>
+                  {ROLES.map(r=><option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div><div style={labelSt}>Email</div><input value={eEmail} onChange={e=>setEEmail(e.target.value)} placeholder="name@company.com" style={inputSt(eEmail)} /></div>
+              <div><div style={labelSt}>Phone</div><input value={ePhone} onChange={e=>setEPhone(e.target.value)} placeholder="602-555-0100" style={inputSt(ePhone)} /></div>
+              <AddBtn disabled={!eName.trim()} onClick={()=>{ onAddEmployee(eName.trim(),eRole,eEmail.trim(),ePhone.trim()); setEName("");setEEmail("");setEPhone(""); }}>Add Crew Member</AddBtn>
+            </div>
+          </AdminCard>
+          <AdminCard title={`Crew Roster — ${employees.length}`}>
+            {employees.map(e => (
+              <AdminRow key={e.id} onRemove={()=>onRemoveEmployee(e.id)}>
+                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                  <span style={{ width:8, height:8, borderRadius:"50%", background:ROLE_COLORS[e.role]||"#5a6a7a", flexShrink:0 }} />
+                  <div>
+                    <div style={{ fontSize:13, color:"#d0dde8", fontWeight:600 }}>{e.name}</div>
+                    <div style={{ fontSize:11, color:"#5a7080" }}>{e.role} · {e.email}</div>
+                  </div>
+                </div>
+              </AdminRow>
+            ))}
+          </AdminCard>
+        </div>
+      )}
+
+      {/* ── EQUIPMENT ── */}
+      {tab==="equipment" && (
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          <AdminCard title="Add Equipment">
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              <div><div style={labelSt}>Equipment Name</div><input value={eqName} onChange={e=>setEqName(e.target.value)} placeholder="e.g. CAT 320 Excavator" style={inputSt(eqName)} /></div>
+              <div><div style={labelSt}>Unit ID</div><input value={eqNum} onChange={e=>setEqNum(e.target.value)} placeholder="e.g. EX-320-03" style={inputSt(eqNum)} /></div>
+              <AddBtn disabled={!eqName.trim()||!eqNum.trim()} onClick={()=>{ onAddEquipment(eqName.trim(),eqNum.trim()); setEqName("");setEqNum(""); }}>Add Equipment</AddBtn>
+            </div>
+          </AdminCard>
+          <AdminCard title={`Equipment Assets — ${equipmentList.length}`}>
+            {equipmentList.map(e => (
+              <AdminRow key={e.id} onRemove={()=>onRemoveEquipment(e.id)}>
+                <div>
+                  <div style={{ fontSize:13, color:"#d0dde8", fontWeight:600 }}>{e.name}</div>
+                  <div style={{ fontSize:11, color:"#5a7080", fontFamily:"'IBM Plex Mono',monospace" }}>{e.id_num}</div>
+                </div>
+              </AdminRow>
+            ))}
+          </AdminCard>
+        </div>
+      )}
+
+      {/* ── TASKS ── */}
+      {tab==="tasks" && (
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          <AdminCard title="Add Task to Project">
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              <div>
+                <div style={labelSt}>Project</div>
+                <select value={taskProj} onChange={e=>setTaskProj(Number(e.target.value))} style={{ ...inputSt(true), cursor:"pointer" }}>
+                  {projects.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+              <div><div style={labelSt}>Task Name</div><input value={taskName} onChange={e=>setTaskName(e.target.value)} placeholder="e.g. Concrete Pour – Span 3" style={inputSt(taskName)} /></div>
+              <AddBtn disabled={!taskName.trim()} onClick={()=>{ onAddTask(taskProj,taskName.trim()); setTaskName(""); }}>Add Task</AddBtn>
+            </div>
+          </AdminCard>
+          {projects.map(p => {
+            const pts = tasksByProject[p.id] || [];
+            if (pts.length===0) return null;
+            return (
+              <AdminCard key={p.id} title={`${p.name} — ${pts.length} tasks`}>
+                {pts.map((t,i) => (
+                  <AdminRow key={i} onRemove={()=>onRemoveTask(p.id,t)}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ color:"#e07b39", fontSize:8 }}>◆</span>
+                      <span style={{ fontSize:12, color:"#c0d0dc" }}>{t}</span>
+                    </div>
+                  </AdminRow>
+                ))}
+              </AdminCard>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Admin helper micro-components
+const labelSt = { fontSize:10, color:"#5a7080", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 };
+function AdminCard({ title, children }) {
+  return (
+    <div style={{ background:"#0d1820", border:"1px solid #1e2830", borderRadius:12, padding:20, animation:"fadeUp 0.3s ease" }}>
+      <div style={{ fontSize:11, fontWeight:700, letterSpacing:"0.12em", color:"#8aa0b0", textTransform:"uppercase", marginBottom:14 }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+function AdminRow({ children, onRemove }) {
+  const [confirm, setConfirm] = useState(false);
+  return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 0", borderBottom:"1px solid #111820" }}>
+      <div style={{ flex:1 }}>{children}</div>
+      {confirm ? (
+        <div style={{ display:"flex", gap:6, flexShrink:0 }}>
+          <button onClick={()=>setConfirm(false)} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:5, color:"#8aa0b0", fontSize:11, padding:"4px 8px", cursor:"pointer", fontFamily:"inherit" }}>Cancel</button>
+          <button onClick={onRemove} style={{ background:"#3a1010", border:"1px solid #8a3030", borderRadius:5, color:"#e07070", fontSize:11, padding:"4px 8px", cursor:"pointer", fontFamily:"inherit" }}>Confirm</button>
+        </div>
+      ) : (
+        <button onClick={()=>setConfirm(true)} style={{ background:"none", border:"1px solid #2a3a48", borderRadius:5, color:"#5a7080", fontSize:11, padding:"4px 9px", cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>Remove</button>
+      )}
+    </div>
+  );
+}
+function AddBtn({ children, onClick, disabled }) {
+  return (
+    <button onClick={onClick} disabled={disabled} style={{ width:"100%", padding:"10px 0", borderRadius:8, background:disabled?"#1e2830":"#e07b39", border:"none", color:disabled?"#3a4a58":"#fff", fontSize:13, fontWeight:700, cursor:disabled?"not-allowed":"pointer", fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"0.08em", textTransform:"uppercase", marginTop:4 }}>{children}</button>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  ROOT APP
 // ═══════════════════════════════════════════════════════════════
 export default function PrimedApp() {
   const [screen, setScreen] = useState("calendar");
   const [schedules, setSchedules] = useState(INITIAL_SCHEDULES);
 
+  // Master data as state — Admin screen mutates these
+  const [projects,      setProjects]      = useState(DEFAULT_PROJECTS);
+  const [employees,     setEmployees]     = useState(DEFAULT_EMPLOYEES);
+  const [equipmentList, setEquipmentList] = useState(DEFAULT_EQUIPMENT_LIST);
+  const [tasksByProject,setTasksByProject]= useState(DEFAULT_TASKS_BY_PROJECT);
+
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [screen]);
 
+  // Schedule handlers
   const handleSave = (id, newDate, newTime, newCrew, newTasks, newEquip, newNotes) => {
     setSchedules(prev => prev.map(s => s.id===id ? { ...s, date:newDate, startTime:newTime, crew:newCrew, tasks:newTasks, equipment:newEquip, notes:newNotes } : s));
   };
+  const handleScheduleAdded = newSched => setSchedules(prev => [...prev, newSched]);
 
-  const handleScheduleAdded = newSched => {
-    setSchedules(prev => [...prev, newSched]);
-  };
+  // Admin handlers
+  const nextId = arr => (Math.max(0,...arr.map(x=>x.id)) + 1);
+  const onAddProject    = (name,location) => setProjects(p=>[...p,{id:nextId(p),name,location}]);
+  const onRemoveProject = id => setProjects(p=>p.filter(x=>x.id!==id));
+  const onAddEmployee   = (name,role,email,phone) => setEmployees(p=>[...p,{id:nextId(p),name,role,email,phone}]);
+  const onRemoveEmployee= id => setEmployees(p=>p.filter(x=>x.id!==id));
+  const onAddEquipment  = (name,id_num) => setEquipmentList(p=>[...p,{id:nextId(p),name,id_num}]);
+  const onRemoveEquipment=id => setEquipmentList(p=>p.filter(x=>x.id!==id));
+  const onAddTask       = (projId,task) => setTasksByProject(p=>({...p,[projId]:[...(p[projId]||[]),task]}));
+  const onRemoveTask    = (projId,task) => setTasksByProject(p=>({...p,[projId]:(p[projId]||[]).filter(t=>t!==task)}));
 
-  const navigate = (s) => {
-    setScreen(s);
-    window.scrollTo({ top: 0, behavior: "instant" });
-  };
+  const navigate = (s) => { setScreen(s); window.scrollTo({ top: 0, behavior: "instant" }); };
 
-  const PAGE_TITLES = { calendar:"Week at a Glance", scheduler:"Add Schedule", dispatch:"Daily Detail" };
-  const PAGE_SUBS   = { calendar:"HOME · MANAGEMENT VIEW", scheduler:"FIELD SCHEDULER", dispatch:"DISPATCH BOARD" };
+  const PAGE_TITLES = { calendar:"Week at a Glance", scheduler:"Add Schedule", dispatch:"Daily Detail", admin:"Admin Settings" };
+  const PAGE_SUBS   = { calendar:"HOME · MANAGEMENT VIEW", scheduler:"FIELD SCHEDULER", dispatch:"DISPATCH BOARD", admin:"MANAGE MASTER DATA" };
 
   return (
     <>
@@ -856,21 +1094,15 @@ export default function PrimedApp() {
         .nav-btn:hover { background:#1a2830 !important; }
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="time"]::-webkit-calendar-picker-indicator { filter:invert(0.5); cursor:pointer; }
-        textarea, input { outline:none; }
+        textarea, input, select { outline:none; }
+        select option { background:#0d1820; }
       `}</style>
 
       <div style={{ minHeight:"100vh", background:"#080f16", fontFamily:"'Barlow',sans-serif" }}>
         {/* ── Global Top Nav ── */}
-        <div style={{
-          position:"sticky", top:0, zIndex:100,
-          background:"#080f16",
-          borderBottom:"1px solid #1a2830",
-          padding:"12px 16px",
-          display:"flex", alignItems:"center", gap:14,
-        }}>
+        <div style={{ position:"sticky", top:0, zIndex:100, background:"#080f16", borderBottom:"1px solid #1a2830", padding:"12px 16px", display:"flex", alignItems:"center", gap:14 }}>
           <HamburgerMenu onNavigate={navigate} currentScreen={screen} />
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            {/* Primed hard hat icon */}
             <div style={{ width:36, height:36, borderRadius:9, background:"#0d1820", border:"1px solid #2a3a48", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
               <svg width="28" height="28" viewBox="0 0 34 34" fill="none">
                 <style>{`@keyframes primed-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.pa{transform-origin:17px 17px;animation:primed-spin 1.4s linear infinite}`}</style>
@@ -895,9 +1127,16 @@ export default function PrimedApp() {
 
         {/* ── Screen Content ── */}
         <div key={screen} style={{ animation:"fadeIn 0.2s ease" }}>
-          {screen==="calendar" && <WeekCalendarScreen schedules={schedules} onSave={handleSave} />}
-          {screen==="scheduler" && <AddScheduleScreen onScheduleAdded={handleScheduleAdded} />}
+          {screen==="calendar"  && <WeekCalendarScreen schedules={schedules} onSave={handleSave} employees={employees} equipmentList={equipmentList} tasksByProject={tasksByProject} projects={projects} />}
+          {screen==="scheduler" && <AddScheduleScreen onScheduleAdded={handleScheduleAdded} projects={projects} employees={employees} tasksByProject={tasksByProject} equipmentList={equipmentList} schedules={schedules} />}
           {screen==="dispatch"  && <DailyDetailScreen schedules={schedules} />}
+          {screen==="admin"     && <AdminScreen
+            projects={projects} employees={employees} equipmentList={equipmentList} tasksByProject={tasksByProject}
+            onAddProject={onAddProject} onRemoveProject={onRemoveProject}
+            onAddEmployee={onAddEmployee} onRemoveEmployee={onRemoveEmployee}
+            onAddEquipment={onAddEquipment} onRemoveEquipment={onRemoveEquipment}
+            onAddTask={onAddTask} onRemoveTask={onRemoveTask}
+          />}
         </div>
       </div>
     </>
