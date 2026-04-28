@@ -750,40 +750,37 @@ function DailyDetailScreen({ schedules }) {
 
   return (
     <div style={{ padding:"20px 14px 64px", maxWidth:700, margin:"0 auto" }}>
-      {/* Date picker strip */}
       <div style={{ marginBottom:22 }}>
-        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:10 }}>Select Date</div>
+        <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:10 }}>Select Date</div>
         <div style={{ display:"flex", gap:7, overflowX:"auto", paddingBottom:4 }}>
           {allDates.map(d => {
             const cnt=schedules.filter(s=>s.date===d).length, sel=d===selDate, tod=d===today;
             return (
-              <button key={d} onClick={()=>setSelDate(d)} style={{ flexShrink:0, background:sel?"rgba(25,118,210,0.2)":"var(--bg2)", border:`1px solid ${sel?"var(--orange)":"var(--border)"}`, borderRadius:10, padding:"9px 14px", cursor:"pointer", textAlign:"center", minWidth:90 }}>
-                {tod && <div style={{ fontSize:8, color:"var(--orange)", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:2 }}>Today</div>}
-                <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:700, fontSize:14, color:sel?"#fff":"var(--text2)" }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short"})}</div>
-                <div style={{ fontFamily:"'Roboto Mono',monospace", fontSize:10, color:sel?"#a0c0d0":"var(--text3)", marginTop:1 }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>
-                <div style={{ fontSize:9, color:sel?"var(--orange)":"var(--text3)", fontFamily:"'Roboto Mono',monospace", marginTop:5 }}>{cnt} job{cnt!==1?"s":""}</div>
+              <button key={d} onClick={()=>setSelDate(d)} style={{ flexShrink:0, background:sel?"#1a2f3f":"#0d1820", border:`1px solid ${sel?"#e07b39":"#1e2830"}`, borderRadius:10, padding:"9px 14px", cursor:"pointer", textAlign:"center", minWidth:90 }}>
+                {tod && <div style={{ fontSize:8, color:"#e07b39", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:2 }}>Today</div>}
+                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:14, color:sel?"#fff":"#8aa0b0" }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short"})}</div>
+                <div style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:10, color:sel?"#a0c0d0":"#3a5060", marginTop:1 }}>{new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</div>
+                <div style={{ fontSize:9, color:sel?"#e07b39":"#3a5060", fontFamily:"'IBM Plex Mono',monospace", marginTop:5 }}>{cnt} job{cnt!==1?"s":""}</div>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Summary bar */}
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20, padding:"12px 16px", background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:10, flexWrap:"wrap" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20, padding:"12px 16px", background:"#0d1820", border:"1px solid #1e2830", borderRadius:10, flexWrap:"wrap" }}>
         <div style={{ flex:1 }}>
-          <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:17, color:"#fff" }}>{fmtDateLong(selDate)}</div>
+          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:17, color:"#fff" }}>{fmtDateLong(selDate)}</div>
         </div>
         {[{v:daySchedules.length,l:"Jobs"},{v:totalCrew,l:"Crew"},{v:totalTasks,l:"Tasks"},{v:totalEquip,l:"Equip"}].map((s,i)=>(
           <div key={i} style={{ textAlign:"center", paddingLeft:14, borderLeft:"1px solid #1e2830" }}>
-            <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontWeight:800, fontSize:20, color:"var(--orange)" }}>{s.v}</div>
-            <div style={{ fontSize:9, color:"var(--text3)", letterSpacing:"0.08em", textTransform:"uppercase" }}>{s.l}</div>
+            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, color:"#e07b39" }}>{s.v}</div>
+            <div style={{ fontSize:9, color:"#5a7080", letterSpacing:"0.08em", textTransform:"uppercase" }}>{s.l}</div>
           </div>
         ))}
       </div>
 
-      {/* Job cards */}
       {daySchedules.length===0
-        ? <div style={{ textAlign:"center", padding:"60px 20px", color:"var(--text3)", fontSize:13, fontStyle:"italic" }}>No jobs scheduled for this date.</div>
+        ? <div style={{ textAlign:"center", padding:"60px 20px", color:"#3a4a58", fontSize:13, fontStyle:"italic" }}>No jobs scheduled for this date.</div>
         : <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
             {daySchedules.map((s,i)=><DispatchCard key={s.id} schedule={s} index={i} />)}
           </div>
@@ -795,37 +792,37 @@ function DailyDetailScreen({ schedules }) {
 function DispatchCard({ schedule, index }) {
   const [open, setOpen] = useState(true);
   return (
-    <div style={{ background:"var(--bg2)", border:"1px solid #1e2830", borderRadius:12, overflow:"hidden", animation:`fadeUp 0.3s ease ${index*0.07}s both` }}>
+    <div style={{ background:"#0d1820", border:"1px solid #1e2830", borderRadius:12, overflow:"hidden", animation:`fadeUp 0.3s ease ${index*0.07}s both` }}>
       <div onClick={()=>setOpen(o=>!o)} style={{ padding:"14px 18px", cursor:"pointer", display:"flex", alignItems:"center", gap:12, borderBottom:open?"1px solid #1a2830":"none" }}>
-        <div style={{ flexShrink:0, background:"var(--bg3)", border:"1px solid #2a3a48", borderRadius:8, padding:"5px 9px", textAlign:"center", minWidth:52 }}>
-          <div style={{ fontFamily:"'Roboto Mono',monospace", fontSize:12, color:"var(--orange)", fontWeight:500 }}>{fmt12(schedule.startTime)}</div>
+        <div style={{ flexShrink:0, background:"#111820", border:"1px solid #2a3a48", borderRadius:8, padding:"5px 9px", textAlign:"center", minWidth:52 }}>
+          <div style={{ fontFamily:"'IBM Plex Mono',monospace", fontSize:12, color:"#e07b39", fontWeight:500 }}>{fmt12(schedule.startTime)}</div>
         </div>
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontFamily:"'Roboto Condensed',sans-serif", fontSize:16, fontWeight:700, color:"var(--text)" }}>{schedule.project.name}</div>
-          <div style={{ fontSize:11, color:"var(--text3)", marginTop:1 }}>📍 {schedule.project.location}</div>
+          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:16, fontWeight:700, color:"#e0eaf0" }}>{schedule.project.name}</div>
+          <div style={{ fontSize:11, color:"#5a7080", marginTop:1 }}>📍 {schedule.project.location}</div>
         </div>
         <div style={{ display:"flex", gap:7, flexShrink:0 }}>
           {[{icon:"👷",val:schedule.crew.length},{icon:"✅",val:schedule.tasks.length}].map((b,i)=>(
-            <div key={i} style={{ display:"flex", alignItems:"center", gap:4, background:"var(--bg3)", border:"1px solid #2a3a48", borderRadius:6, padding:"3px 9px", fontSize:12, color:"var(--text2)" }}>
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:4, background:"#111820", border:"1px solid #2a3a48", borderRadius:6, padding:"3px 9px", fontSize:12, color:"#8aa0b0" }}>
               <span style={{ fontSize:12 }}>{b.icon}</span>
-              <span style={{ fontFamily:"'Roboto Mono',monospace" }}>{b.val}</span>
+              <span style={{ fontFamily:"'IBM Plex Mono',monospace" }}>{b.val}</span>
             </div>
           ))}
         </div>
-        <span style={{ color:"var(--text3)", fontSize:13, flexShrink:0, transform:open?"rotate(180deg)":"rotate(0)", transition:"transform 0.2s", display:"inline-block" }}>▼</span>
+        <span style={{ color:"#3a4a58", fontSize:13, flexShrink:0, transform:open?"rotate(180deg)":"rotate(0)", transition:"transform 0.2s", display:"inline-block" }}>▼</span>
       </div>
       {open && (
         <div style={{ padding:"16px 18px", display:"flex", flexDirection:"column", gap:16 }}>
           <DSect label={`Crew — ${schedule.crew.length} assigned`}>
             <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
               {schedule.crew.map((name,i) => {
-                const emp = EMPLOYEES.find(e=>e.name===name);
+                const emp = DEFAULT_EMPLOYEES.find(e=>e.name===name);
                 const role = emp?.role||"";
                 return (
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:6, background:"var(--bg3)", border:"1px solid #1e2830", borderRadius:7, padding:"5px 10px" }}>
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:6, background:"#111820", border:"1px solid #1e2830", borderRadius:7, padding:"5px 10px" }}>
                     <span style={{ width:7, height:7, borderRadius:"50%", background:ROLE_COLORS[role]||"#5a6a7a", flexShrink:0 }} />
-                    <span style={{ fontSize:12, color:"var(--text)", fontWeight:600 }}>{name}</span>
-                    {role && <span style={{ fontSize:10, color:"var(--text3)" }}>{role}</span>}
+                    <span style={{ fontSize:12, color:"#c0d0dc", fontWeight:600 }}>{name}</span>
+                    {role && <span style={{ fontSize:10, color:"#4a6070" }}>{role}</span>}
                   </div>
                 );
               })}
@@ -833,11 +830,11 @@ function DispatchCard({ schedule, index }) {
           </DSect>
           <DSect label={`Tasks — ${schedule.tasks.length}`}>
             <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-              {schedule.tasks.map((t,i)=><div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 10px", background:"var(--bg2)", borderRadius:5, fontSize:12, color:"var(--text2)" }}><span style={{ color:"var(--orange)", fontSize:8 }}>◆</span>{t}</div>)}
+              {schedule.tasks.map((t,i)=><div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 10px", background:"#0a1520", borderRadius:5, fontSize:12, color:"#a0b8c8" }}><span style={{ color:"#e07b39", fontSize:8 }}>◆</span>{t}</div>)}
             </div>
           </DSect>
-          {schedule.equipment.length>0 && <DSect label={`Equipment — ${schedule.equipment.length}`}><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{schedule.equipment.map((e,i)=><span key={i} style={{ fontSize:11, color:"var(--text2)", background:"var(--bg2)", border:"1px solid #1a2a38", borderRadius:5, padding:"4px 9px", fontFamily:"'Roboto Mono',monospace" }}>{e}</span>)}</div></DSect>}
-          {schedule.notes && <div style={{ padding:"9px 13px", background:"var(--bg2)", border:"1px solid #1e3040", borderRadius:7, fontSize:12, color:"var(--text2)", lineHeight:1.6, display:"flex", gap:8 }}><span style={{ color:"var(--orange)", flexShrink:0 }}>📝</span>{schedule.notes}</div>}
+          {schedule.equipment.length>0 && <DSect label={`Equipment — ${schedule.equipment.length}`}><div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>{schedule.equipment.map((e,i)=><span key={i} style={{ fontSize:11, color:"#7a9aaa", background:"#0a1520", border:"1px solid #1a2a38", borderRadius:5, padding:"4px 9px", fontFamily:"'IBM Plex Mono',monospace" }}>{e}</span>)}</div></DSect>}
+          {schedule.notes && <div style={{ padding:"9px 13px", background:"#0a1820", border:"1px solid #1e3040", borderRadius:7, fontSize:12, color:"#7a9aaa", lineHeight:1.6, display:"flex", gap:8 }}><span style={{ color:"#e07b39", flexShrink:0 }}>📝</span>{schedule.notes}</div>}
         </div>
       )}
     </div>
@@ -845,7 +842,7 @@ function DispatchCard({ schedule, index }) {
 }
 
 function DSect({ label, children }) {
-  return <div><div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--text3)", textTransform:"uppercase", marginBottom:8 }}>{label}</div>{children}</div>;
+  return <div><div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"#5a7080", textTransform:"uppercase", marginBottom:8 }}>{label}</div>{children}</div>;
 }
 
 // ═══════════════════════════════════════════════════════════════
